@@ -20,6 +20,8 @@ type FormData = {
   straat?: string
   huisnummer?: string
   opmerkingen?: string
+  email?: string
+  telefoonnummer?: string
 }
 
 const StokbroodButton = ({ onClick, children }: { onClick: () => void; children: React.ReactNode }) => (
@@ -57,6 +59,8 @@ export default function Home() {
   const [aantalOverige, setAantalOverige] = useState(0)
   const [huisnummer, setHuisnummer] = useState('')
   const [opmerkingen, setOpmerkingen] = useState('')
+  const [email, setEmail] = useState('')
+  const [telefoonnummer, setTelefoonnummer] = useState('')
 
   const handleNextStep = (data: Partial<FormData>) => {
     setFormData(prev => ({ ...prev, ...data }))
@@ -200,7 +204,7 @@ export default function Home() {
       case 5: // Huisnummer
         const handleFinalSubmit = async () => {
           setIsSubmitting(true)
-          const finalData = { ...formData, huisnummer, opmerkingen }
+          const finalData = { ...formData, huisnummer, email, telefoonnummer, opmerkingen }
           console.log("Submitting:", finalData)
 
           // Tijdelijk uitgeschakeld voor testen
@@ -239,6 +243,27 @@ export default function Home() {
                 />
               </div>
               <div className="space-y-2">
+                <Label htmlFor="email" className="text-lg">E-mailadres</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="jouw@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="text-base"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="telefoonnummer" className="text-lg">Telefoonnummer (optioneel)</Label>
+                <Input
+                  id="telefoonnummer"
+                  placeholder="0612345678"
+                  value={telefoonnummer}
+                  onChange={(e) => setTelefoonnummer(e.target.value)}
+                  className="text-base"
+                />
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="opmerkingen" className="text-lg">Nog opmerkingen?</Label>
                 <Input
                   id="opmerkingen"
@@ -248,7 +273,7 @@ export default function Home() {
                   className="text-base"
                 />
               </div>
-              <Button onClick={handleFinalSubmit} disabled={isSubmitting || !huisnummer} className="w-full !mt-8" size="lg">
+              <Button onClick={handleFinalSubmit} disabled={isSubmitting || !huisnummer || !email} className="w-full !mt-8" size="lg">
                 {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Verzenden
               </Button>
