@@ -20,10 +20,10 @@ export const bezorgTijden = [
 ]
 
 export const straatOpties = [
-  'Csardasstraat',
-  'Menuetstraat',
-  'Etudestraat',
-  'Polkastraat'
+  { value: 'csardasstraat', label: 'Csardasstraat' },
+  { value: 'menuetstraat', label: 'Menuetstraat' },
+  { value: 'etudestraat', label: 'Etudestraat' },
+  { value: 'polkastraat', label: 'Polkastraat' }
 ]
 
 export const frequentieOpties = [
