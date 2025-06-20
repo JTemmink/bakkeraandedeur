@@ -22,6 +22,30 @@ type FormData = {
   opmerkingen?: string
 }
 
+const StokbroodButton = ({ onClick, children }: { onClick: () => void; children: React.ReactNode }) => (
+  <button
+    onClick={onClick}
+    className="relative w-full h-16 border-2 border-amber-800/80 rounded-full bg-[#f2d5a3] hover:bg-[#eac88a] transition-all duration-200 flex items-center justify-center group shadow-lg"
+    style={{
+      boxShadow: '0 4px 6px -1px rgba(101, 59, 12, 0.2), 0 2px 4px -1px rgba(101, 59, 12, 0.15), inset 0 -4px 5px rgba(101, 59, 12, 0.3)'
+    }}
+  >
+    {/* Diagonal lines to simulate baguette scores */}
+    <div className="absolute top-0 left-0 w-full h-full overflow-hidden rounded-full">
+        <div className="absolute w-2 h-24 bg-amber-900/20 transform -rotate-45 -translate-x-12 -translate-y-4"></div>
+        <div className="absolute w-2 h-24 bg-amber-900/20 transform -rotate-45 -translate-x-4 -translate-y-4"></div>
+        <div className="absolute w-2 h-24 bg-amber-900/20 transform -rotate-45 translate-x-4 -translate-y-4"></div>
+        <div className="absolute w-2 h-24 bg-amber-900/20 transform -rotate-45 translate-x-12 -translate-y-4"></div>
+        <div className="absolute w-2 h-24 bg-amber-900/20 transform -rotate-45 translate-x-20 -translate-y-4"></div>
+        <div className="absolute w-2 h-24 bg-amber-900/20 transform -rotate-45 translate-x-28 -translate-y-4"></div>
+    </div>
+
+    <span className="relative z-10 font-bold text-xl text-stone-800 group-hover:text-stone-900 transition-colors" style={{ textShadow: '1px 1px 1px rgba(255,255,255,0.5)' }}>
+      {children}
+    </span>
+  </button>
+);
+
 export default function Home() {
   const [step, setStep] = useState(0) // 0: Landing, 1: Tijd, 2: Frequentie, 3: Brood, 4: Straat, 5: Huisnummer, 6: Succes
   const [formData, setFormData] = useState<FormData>({})
@@ -163,11 +187,11 @@ export default function Home() {
                 Selecteer uw straat. We bezorgen alleen in deze vier straten.
               </CardDescription>
             </CardHeader>
-            <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {straatOpties.map((straat, index) => (
-                <Button key={index} onClick={() => handleNextStep({ straat: straat.value })} className="h-auto py-4 text-base" size="lg">
+            <CardContent className="grid grid-cols-1 gap-4 pt-2">
+              {straatOpties.map((straat) => (
+                <StokbroodButton key={straat.value} onClick={() => handleNextStep({ straat: straat.value })}>
                   {straat.label}
-                </Button>
+                </StokbroodButton>
               ))}
             </CardContent>
           </Card>
