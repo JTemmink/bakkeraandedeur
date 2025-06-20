@@ -13,12 +13,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { BroodKaart } from "@/components/BroodKaart"
-import { broodOpties, bezorgTijden } from "@/data/broden"
+import { broodOpties, bezorgTijden, straatOpties } from "@/data/broden"
 // import { supabase } from "@/lib/supabase"
 
 const formSchema = z.object({
   naam: z.string().min(2, 'Naam moet minimaal 2 karakters zijn'),
-  adres: z.string().min(5, 'Vul een geldig adres in'),
+  straat: z.string().min(1, 'Selecteer een straat'),
+  huisnummer: z.string().min(1, 'Vul een huisnummer in'),
   email: z.string().email('Vul een geldig emailadres in'),
   telefoon: z.string().optional(),
   bezorgTijd: z.string().min(1, 'Selecteer een bezorgtijd'),
@@ -55,8 +56,11 @@ export default function Home() {
       .filter(([_, aantal]) => aantal > 0)
       .map(([broodType, aantal]) => ({ broodType, aantal }))
 
+    // Combineer straat en huisnummer tot een volledig adres
+    const volledigAdres = `${data.straat} ${data.huisnummer}`;
+
     // Tijdelijk uitgeschakeld voor debuggen
-    console.log("Formuliergegevens:", { ...data, broodSelectie })
+    console.log("Formuliergegevens:", { ...data, adres: volledigAdres, broodSelectie })
 
     // Simuleer een netwerkvertraging
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -70,6 +74,7 @@ export default function Home() {
         .from('interesse_formulieren')
         .insert({
           ...data,
+          adres: `${data.straat} ${data.huisnummer}`,
           brood_selectie: broodSelectie,
           bezorg_tijd: data.bezorgTijd,
           bezorg_dagen: data.bezorgDagen
@@ -109,7 +114,7 @@ export default function Home() {
       <div className="bg-bakker-bruin text-white py-12 px-4 sm:py-16">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-3">
-            Bakker aan de Deur 🥖
+            Bakker aan de Deur
           </h1>
           <p className="text-lg sm:text-xl md:text-2xl mb-2">
             Vers brood, thuisbezorgd
@@ -158,16 +163,37 @@ export default function Home() {
                 </div>
               </div>
               
-              <div>
-                <Label htmlFor="adres">Adres *</Label>
-                <Input
-                  id="adres"
-                  {...register('adres')}
-                  placeholder="Bakkerstraat 1, 1234 AB Amsterdam"
-                />
-                {errors.adres && (
-                  <p className="text-sm text-red-600 mt-1">{errors.adres.message}</p>
-                )}
+              <div className="grid grid-cols-[1fr_auto] gap-4">
+                <div>
+                  <Label htmlFor="straat">Straat *</Label>
+                  <Select onValueChange={(value) => setValue('straat', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecteer uw straat" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {straatOpties.map((straat) => (
+                        <SelectItem key={straat} value={straat}>
+                          {straat}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.straat && (
+                    <p className="text-sm text-red-600 mt-1">{errors.straat.message}</p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="huisnummer">Huisnummer *</Label>
+                  <Input
+                    id="huisnummer"
+                    {...register('huisnummer')}
+                    placeholder="bv. 123"
+                    className="w-32"
+                  />
+                  {errors.huisnummer && (
+                    <p className="text-sm text-red-600 mt-1">{errors.huisnummer.message}</p>
+                  )}
+                </div>
               </div>
               
               <div>
@@ -253,7 +279,7 @@ export default function Home() {
               </div>
 
               <div>
-                <Label htmlFor="bezorgTijd">Gewenste bezorgtijd *</Label>
+                <Label htmlFor="bezorgTijd">Uiterlijke bezorgtijd *</Label>
                 <Select onValueChange={(value) => setValue('bezorgTijd', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecteer een tijd" />
@@ -284,7 +310,7 @@ export default function Home() {
             <CardContent>
               <Textarea
                 {...register('opmerkingen')}
-                placeholder="Bijvoorbeeld: Ik heb een glutenallergie, graag bellen bij aflevering, etc."
+                placeholder="Heeft u nog ideeen, tips, vragen of opmerkingen?"
                 rows={4}
               />
             </CardContent>

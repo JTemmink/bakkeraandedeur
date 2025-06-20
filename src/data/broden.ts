@@ -12,9 +12,16 @@ export const broodOpties = [
 ]
 
 export const bezorgTijden = [
-  '06:00 - 07:00',
-  '07:00 - 08:00', 
-  '08:00 - 09:00',
-  '09:00 - 10:00',
-  '10:00 - 11:00'
+  '07:00', '07:15', '07:30', '07:45',
+  '08:00', '08:15', '08:30', '08:45',
+  '09:00', '09:15', '09:30', '09:45',
+  '10:00', '10:15', '10:30', '10:45',
+  '11:00'
+]
+
+export const straatOpties = [
+  'Csardasstraat',
+  'Menuetstraat',
+  'Etudestraat',
+  'Polkastraat'
 ] 
