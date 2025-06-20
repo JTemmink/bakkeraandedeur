@@ -308,16 +308,15 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-bakker-cream to-bakker-beige flex flex-col items-center justify-center p-4">
-      <div className="absolute top-8 left-1/2 -translate-x-1/2">
-        <Image
-          src="/bakkeraandedeurlogo.png"
-          alt="Bakker aan de Deur Logo"
-          width={150}
-          height={150}
-          priority
-        />
-      </div>
+    <main className="flex min-h-screen flex-col items-center justify-start sm:justify-center p-4 pt-28 sm:p-8 relative overflow-hidden">
+      {/* Background image */}
+      <Image
+        src="/bakkeraandedeurlogo.png"
+        alt="Bakker aan de Deur Logo"
+        width={150}
+        height={150}
+        priority
+      />
       {renderStep()}
     </main>
   )
