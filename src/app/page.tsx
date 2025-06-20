@@ -14,26 +14,25 @@ import { frequentieOpties, straatOpties, bezorgTijden } from "@/data/broden"
 type FormData = {
   bezorgTijd?: string
   frequentie?: string
+  aantalHeleBroden?: number
   aantalHalveBroden?: number
   aantalOverige?: number
-  naam?: string
   straat?: string
   huisnummer?: string
-  email?: string
+  opmerkingen?: string
 }
 
 export default function Home() {
-  const [step, setStep] = useState(0) // 0: Landing, 1: Tijd, 2: Frequentie, 3: Brood, 4: Adres, 5: Succes
+  const [step, setStep] = useState(0) // 0: Landing, 1: Tijd, 2: Frequentie, 3: Brood, 4: Straat, 5: Huisnummer, 6: Succes
   const [formData, setFormData] = useState<FormData>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   // State voor de stappen
+  const [aantalHeleBroden, setAantalHeleBroden] = useState(0)
   const [aantalHalveBroden, setAantalHalveBroden] = useState(0)
   const [aantalOverige, setAantalOverige] = useState(0)
-  const [naam, setNaam] = useState('')
-  const [straat, setStraat] = useState('')
   const [huisnummer, setHuisnummer] = useState('')
-  const [email, setEmail] = useState('')
+  const [opmerkingen, setOpmerkingen] = useState('')
 
   const handleNextStep = (data: Partial<FormData>) => {
     setFormData(prev => ({ ...prev, ...data }))
@@ -106,9 +105,23 @@ export default function Home() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* Teller voor Hele Broden */}
+              <div className="flex items-center justify-between">
+                <Label htmlFor="aantal-hele-broden" className="text-lg">Aantal hele broden</Label>
+                <div className="flex items-center justify-center gap-2">
+                  <Button size="icon" variant="outline" className="h-9 w-9" onClick={() => setAantalHeleBroden(prev => Math.max(0, prev - 1))} disabled={aantalHeleBroden === 0}>
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <span className="w-12 text-center font-semibold text-lg">{aantalHeleBroden}</span>
+                  <Button size="icon" variant="outline" className="h-9 w-9" onClick={() => setAantalHeleBroden(prev => prev + 1)}>
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+
               {/* Teller voor Halve Broden */}
               <div className="flex items-center justify-between">
-                <Label htmlFor="aantal-broden" className="text-lg">Aantal (halve) broden</Label>
+                <Label htmlFor="aantal-broden" className="text-lg">Aantal halve broden</Label>
                 <div className="flex items-center justify-center gap-2">
                   <Button size="icon" variant="outline" className="h-9 w-9" onClick={() => setAantalHalveBroden(prev => Math.max(0, prev - 1))} disabled={aantalHalveBroden === 0}>
                     <Minus className="h-4 w-4" />
@@ -122,7 +135,7 @@ export default function Home() {
 
               {/* Teller voor Overige Producten */}
               <div className="flex items-center justify-between">
-                <Label htmlFor="aantal-overige" className="text-lg">Overige (croissants, etc.)</Label>
+                <Label htmlFor="aantal-overige" className="text-lg">Overige (krentenbollen, etc.)</Label>
                 <div className="flex items-center justify-center gap-2">
                   <Button size="icon" variant="outline" className="h-9 w-9" onClick={() => setAantalOverige(prev => Math.max(0, prev - 1))} disabled={aantalOverige === 0}>
                     <Minus className="h-4 w-4" />
@@ -134,68 +147,96 @@ export default function Home() {
                 </div>
               </div>
               
-              <Button onClick={() => handleNextStep({ aantalHalveBroden, aantalOverige })} className="w-full !mt-8" size="lg">
+              <Button onClick={() => handleNextStep({ aantalHeleBroden, aantalHalveBroden, aantalOverige })} className="w-full !mt-8" size="lg">
                 Volgende
               </Button>
             </CardContent>
           </Card>
         )
 
-      case 4: // Adresgegevens
-        const handleFinalSubmit = async () => {
-          setIsSubmitting(true)
-          const finalData = { ...formData, naam, straat, huisnummer, email }
-          console.log("FINALE GEGEVENS:", finalData)
-          // Hier komt de Supabase code weer terug als we die aanzetten
-          await new Promise(resolve => setTimeout(resolve, 1000))
-          setIsSubmitting(false)
-          setStep(5)
-        }
-        
+      case 4: // Straatkeuze
         return (
           <Card className="w-full max-w-lg bg-white/90 shadow-lg">
             <CardHeader>
-              <CardTitle>Bijna klaar!</CardTitle>
+              <CardTitle>In welke straat woont u?</CardTitle>
               <CardDescription>
-                We hebben alleen nog uw gegevens nodig.
+                Selecteer uw straat. We bezorgen alleen in deze vier straten.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-               <div className="space-y-1">
-                <Label htmlFor="naam">Naam</Label>
-                <Input id="naam" value={naam} onChange={(e) => setNaam(e.target.value)} placeholder="Jan Bakker" />
+            <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {straatOpties.map((straat) => (
+                <Button key={straat.value} onClick={() => handleNextStep({ straat: straat.value })} className="h-auto py-4 text-base" size="lg">
+                  {straat.label}
+                </Button>
+              ))}
+            </CardContent>
+          </Card>
+        );
+
+      case 5: // Huisnummer
+        const handleFinalSubmit = async () => {
+          setIsSubmitting(true)
+          const finalData = { ...formData, huisnummer, opmerkingen }
+          console.log("Submitting:", finalData)
+
+          // Tijdelijk uitgeschakeld voor testen
+          // const { error } = await supabase.from('interesse').insert([finalData])
+          const error = null // Simuleer succes
+
+          await new Promise(resolve => setTimeout(resolve, 1500)) // Simuleer netwerkvertraging
+
+          if (error) {
+            console.error("Fout bij opslaan:", error)
+            alert("Er is iets misgegaan. Probeer het opnieuw.")
+            setIsSubmitting(false)
+          } else {
+            console.log("Succesvol opgeslagen")
+            setStep(prev => prev + 1)
+          }
+        }
+
+        return (
+          <Card className="w-full max-w-lg bg-white/90 shadow-lg">
+            <CardHeader>
+              <CardTitle>Wat is uw huisnummer?</CardTitle>
+              <CardDescription>
+                Vul hieronder uw huisnummer en eventuele toevoeging in.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="huisnummer" className="text-lg">Huisnummer</Label>
+                <Input
+                  id="huisnummer"
+                  placeholder="bv. 12a"
+                  value={huisnummer}
+                  onChange={(e) => setHuisnummer(e.target.value)}
+                  className="text-base"
+                />
               </div>
-               <div className="space-y-1">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="jan@example.com" />
+              <div className="space-y-2">
+                <Label htmlFor="opmerkingen" className="text-lg">Nog opmerkingen?</Label>
+                <Input
+                  id="opmerkingen"
+                  placeholder="(Optioneel)"
+                  value={opmerkingen}
+                  onChange={(e) => setOpmerkingen(e.target.value)}
+                  className="text-base"
+                />
               </div>
-              <div className="grid grid-cols-[1fr_auto] gap-4">
-                <div className="space-y-1">
-                  <Label htmlFor="straat">Straat</Label>
-                  <Select onValueChange={setStraat}>
-                    <SelectTrigger><SelectValue placeholder="Kies uw straat" /></SelectTrigger>
-                    <SelectContent>
-                      {straatOpties.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="huisnummer">Huisnummer</Label>
-                  <Input id="huisnummer" value={huisnummer} onChange={(e) => setHuisnummer(e.target.value)} placeholder="123" className="w-28"/>
-                </div>
-              </div>
-              <Button onClick={handleFinalSubmit} disabled={isSubmitting || !naam || !email || !straat || !huisnummer} className="w-full" size="lg">
-                 {isSubmitting ? <Loader2 className="animate-spin" /> : 'Verstuur mijn interesse'}
+              <Button onClick={handleFinalSubmit} disabled={isSubmitting || !huisnummer} className="w-full !mt-8" size="lg">
+                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                Verzenden
               </Button>
             </CardContent>
           </Card>
         )
 
-      case 5: // Succes
+      case 6: // Succes
         return (
           <Card className="w-full max-w-lg bg-white/90 shadow-lg text-center">
             <CardContent className="p-8">
-              <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
+              <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
               <h2 className="text-2xl font-bold mb-2">Bedankt voor het invullen!</h2>
               <p className="text-muted-foreground">We hebben al uw antwoorden ontvangen. We houden u op de hoogte!</p>
             </CardContent>
