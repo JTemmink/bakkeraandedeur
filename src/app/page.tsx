@@ -2,20 +2,20 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { Loader2, CheckCircle } from 'lucide-react'
+import { Loader2, CheckCircle, Minus, Plus } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { BroodKaart } from "@/components/BroodKaart"
-import { broodOpties, bezorgTijden, straatOpties, frequentieOpties } from "@/data/broden"
+import { frequentieOpties, straatOpties, bezorgTijden } from "@/data/broden"
 // import { supabase } from "@/lib/supabase"
 
 type FormData = {
   bezorgTijd?: string
   frequentie?: string
-  broodSelectie?: Record<string, number>
+  aantalHalveBroden?: number
+  aantalOverige?: number
   naam?: string
   straat?: string
   huisnummer?: string
@@ -28,7 +28,8 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   // State voor de stappen
-  const [broodAantallen, setBroodAantallen] = useState<Record<string, number>>({})
+  const [aantalHalveBroden, setAantalHalveBroden] = useState(0)
+  const [aantalOverige, setAantalOverige] = useState(0)
   const [naam, setNaam] = useState('')
   const [straat, setStraat] = useState('')
   const [huisnummer, setHuisnummer] = useState('')
@@ -97,25 +98,43 @@ export default function Home() {
         
       case 3: // Broodkeuze
         return (
-          <Card className="w-full max-w-4xl bg-white/90 shadow-lg">
+          <Card className="w-full max-w-lg bg-white/90 shadow-lg">
             <CardHeader>
               <CardTitle>Waar heeft u interesse in?</CardTitle>
               <CardDescription>
-                Geef aan hoeveel (halve) broden u per keer verwacht te bestellen.
+                Geef een schatting van het aantal producten dat u per keer verwacht te bestellen.
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
-                {broodOpties.map((brood) => (
-                  <BroodKaart
-                    key={brood.id}
-                    brood={brood}
-                    aantal={broodAantallen[brood.id] || 0}
-                    onAantalChange={(aantal) => setBroodAantallen(prev => ({ ...prev, [brood.id]: aantal }))}
-                  />
-                ))}
+            <CardContent className="space-y-6">
+              {/* Teller voor Halve Broden */}
+              <div className="flex items-center justify-between">
+                <Label htmlFor="aantal-broden" className="text-lg">Aantal (halve) broden</Label>
+                <div className="flex items-center justify-center gap-2">
+                  <Button size="icon" variant="outline" className="h-9 w-9" onClick={() => setAantalHalveBroden(prev => Math.max(0, prev - 1))} disabled={aantalHalveBroden === 0}>
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <span className="w-12 text-center font-semibold text-lg">{aantalHalveBroden}</span>
+                  <Button size="icon" variant="outline" className="h-9 w-9" onClick={() => setAantalHalveBroden(prev => prev + 1)}>
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-              <Button onClick={() => handleNextStep({ broodSelectie: broodAantallen })} className="w-full" size="lg">
+
+              {/* Teller voor Overige Producten */}
+              <div className="flex items-center justify-between">
+                <Label htmlFor="aantal-overige" className="text-lg">Overige (croissants, etc.)</Label>
+                <div className="flex items-center justify-center gap-2">
+                  <Button size="icon" variant="outline" className="h-9 w-9" onClick={() => setAantalOverige(prev => Math.max(0, prev - 1))} disabled={aantalOverige === 0}>
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <span className="w-12 text-center font-semibold text-lg">{aantalOverige}</span>
+                  <Button size="icon" variant="outline" className="h-9 w-9" onClick={() => setAantalOverige(prev => prev + 1)}>
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              
+              <Button onClick={() => handleNextStep({ aantalHalveBroden, aantalOverige })} className="w-full !mt-8" size="lg">
                 Volgende
               </Button>
             </CardContent>
