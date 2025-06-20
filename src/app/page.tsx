@@ -164,8 +164,8 @@ export default function Home() {
               </CardDescription>
             </CardHeader>
             <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {straatOpties.map((straat) => (
-                <Button key={straat.value} onClick={() => handleNextStep({ straat: straat.value })} className="h-auto py-4 text-base" size="lg">
+              {straatOpties.map((straat, index) => (
+                <Button key={index} onClick={() => handleNextStep({ straat: straat.value })} className="h-auto py-4 text-base" size="lg">
                   {straat.label}
                 </Button>
               ))}
