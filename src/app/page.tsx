@@ -1,103 +1,323 @@
-import Image from "next/image";
+'use client'
+
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+import { Loader2, CheckCircle } from 'lucide-react'
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { BroodKaart } from "@/components/BroodKaart"
+import { broodOpties, bezorgTijden } from "@/data/broden"
+// import { supabase } from "@/lib/supabase"
+
+const formSchema = z.object({
+  naam: z.string().min(2, 'Naam moet minimaal 2 karakters zijn'),
+  adres: z.string().min(5, 'Vul een geldig adres in'),
+  email: z.string().email('Vul een geldig emailadres in'),
+  telefoon: z.string().optional(),
+  bezorgTijd: z.string().min(1, 'Selecteer een bezorgtijd'),
+  bezorgDagen: z.array(z.string()).min(1, 'Selecteer minimaal één bezorgdag'),
+  opmerkingen: z.string().optional()
+})
+
+type FormData = z.infer<typeof formSchema>
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [broodAantallen, setBroodAantallen] = useState<Record<string, number>>({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors }
+  } = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      bezorgDagen: []
+    }
+  })
+
+  const bezorgDagen = watch('bezorgDagen')
+
+  const onSubmit = async (data: FormData) => {
+    setIsSubmitting(true)
+    
+    const broodSelectie = Object.entries(broodAantallen)
+      .filter(([_, aantal]) => aantal > 0)
+      .map(([broodType, aantal]) => ({ broodType, aantal }))
+
+    // Tijdelijk uitgeschakeld voor debuggen
+    console.log("Formuliergegevens:", { ...data, broodSelectie })
+
+    // Simuleer een netwerkvertraging
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    setIsSuccess(true)
+    setIsSubmitting(false)
+
+    /* Oorspronkelijke Supabase code:
+    try {
+      const { error } = await supabase
+        .from('interesse_formulieren')
+        .insert({
+          ...data,
+          brood_selectie: broodSelectie,
+          bezorg_tijd: data.bezorgTijd,
+          bezorg_dagen: data.bezorgDagen
+        })
+
+      if (error) throw error
+
+      setIsSuccess(true)
+    } catch (error) {
+      console.error('Error:', error)
+      alert('Er ging iets mis. Probeer het later opnieuw.')
+    } finally {
+      setIsSubmitting(false)
+    }
+    */
+  }
+
+  if (isSuccess) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-bakker-cream to-bakker-beige flex items-center justify-center p-4">
+        <Card className="max-w-md w-full">
+          <CardContent className="pt-6 text-center">
+            <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold mb-2">Bedankt voor je interesse!</h2>
+            <p className="text-muted-foreground">
+              We hebben je aanmelding ontvangen. We nemen snel contact met je op!
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-bakker-cream to-bakker-beige">
+      {/* Hero sectie */}
+      <div className="bg-bakker-bruin text-white py-12 px-4 sm:py-16">
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-3">
+            Bakker aan de Deur 🥖
+          </h1>
+          <p className="text-lg sm:text-xl md:text-2xl mb-2">
+            Vers brood, thuisbezorgd
+          </p>
+          <p className="text-base sm:text-lg opacity-90 max-w-2xl mx-auto">
+            Meld je interesse aan en geniet straks van vers gebakken brood aan huis, elke dinsdag en vrijdag!
+          </p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+      </div>
+
+      {/* Formulier */}
+      <div className="max-w-4xl mx-auto p-4 sm:py-8">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {/* Persoonlijke gegevens */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Persoonlijke gegevens</CardTitle>
+              <CardDescription>
+                Vul je gegevens in zodat we contact met je kunnen opnemen
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-6">
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="naam">Naam *</Label>
+                  <Input
+                    id="naam"
+                    {...register('naam')}
+                    placeholder="Jan Bakker"
+                  />
+                  {errors.naam && (
+                    <p className="text-sm text-red-600 mt-1">{errors.naam.message}</p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="email">Email *</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    {...register('email')}
+                    placeholder="jan@example.com"
+                  />
+                  {errors.email && (
+                    <p className="text-sm text-red-600 mt-1">{errors.email.message}</p>
+                  )}
+                </div>
+              </div>
+              
+              <div>
+                <Label htmlFor="adres">Adres *</Label>
+                <Input
+                  id="adres"
+                  {...register('adres')}
+                  placeholder="Bakkerstraat 1, 1234 AB Amsterdam"
+                />
+                {errors.adres && (
+                  <p className="text-sm text-red-600 mt-1">{errors.adres.message}</p>
+                )}
+              </div>
+              
+              <div>
+                <Label htmlFor="telefoon">Telefoon (optioneel)</Label>
+                <Input
+                  id="telefoon"
+                  type="tel"
+                  {...register('telefoon')}
+                  placeholder="06-12345678"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Brood selectie */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Kies je brood</CardTitle>
+              <CardDescription>
+                Geef aan hoeveel broden je ongeveer per keer zou willen bestellen
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+                {broodOpties.map((brood) => (
+                  <BroodKaart
+                    key={brood.id}
+                    brood={brood}
+                    aantal={broodAantallen[brood.id] || 0}
+                    onAantalChange={(aantal) => 
+                      setBroodAantallen(prev => ({ ...prev, [brood.id]: aantal }))
+                    }
+                  />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Bezorg voorkeuren */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Bezorg voorkeuren</CardTitle>
+              <CardDescription>
+                Wanneer wil je je brood ontvangen?
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 sm:space-y-6">
+              <div>
+                <Label>Bezorgdagen *</Label>
+                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mt-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="dinsdag"
+                      checked={bezorgDagen?.includes('dinsdag')}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setValue('bezorgDagen', [...(bezorgDagen || []), 'dinsdag'])
+                        } else {
+                          setValue('bezorgDagen', bezorgDagen?.filter(d => d !== 'dinsdag') || [])
+                        }
+                      }}
+                    />
+                    <Label htmlFor="dinsdag">Dinsdag</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="vrijdag"
+                      checked={bezorgDagen?.includes('vrijdag')}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setValue('bezorgDagen', [...(bezorgDagen || []), 'vrijdag'])
+                        } else {
+                          setValue('bezorgDagen', bezorgDagen?.filter(d => d !== 'vrijdag') || [])
+                        }
+                      }}
+                    />
+                    <Label htmlFor="vrijdag">Vrijdag</Label>
+                  </div>
+                </div>
+                {errors.bezorgDagen && (
+                  <p className="text-sm text-red-600 mt-1">{errors.bezorgDagen.message}</p>
+                )}
+              </div>
+
+              <div>
+                <Label htmlFor="bezorgTijd">Gewenste bezorgtijd *</Label>
+                <Select onValueChange={(value) => setValue('bezorgTijd', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecteer een tijd" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {bezorgTijden.map((tijd) => (
+                      <SelectItem key={tijd} value={tijd}>
+                        {tijd}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.bezorgTijd && (
+                  <p className="text-sm text-red-600 mt-1">{errors.bezorgTijd.message}</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Opmerkingen */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Aanvullende informatie</CardTitle>
+              <CardDescription>
+                Heb je speciale wensen of opmerkingen?
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Textarea
+                {...register('opmerkingen')}
+                placeholder="Bijvoorbeeld: Ik heb een glutenallergie, graag bellen bij aflevering, etc."
+                rows={4}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Submit button */}
+          <Button 
+            type="submit" 
+            size="lg" 
+            className="w-full bg-bakker-bruin hover:bg-bakker-donkerbruin text-lg"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Versturen...
+              </>
+            ) : (
+              'Verstuur mijn interesse'
+            )}
+          </Button>
+        </form>
+      </div>
+
+      {/* Footer */}
+      <footer className="bg-bakker-donkerbruin text-white py-6 px-4 mt-12">
+        <div className="max-w-4xl mx-auto text-center">
+          <p className="mb-2">© 2024 Bakker aan de Deur</p>
+          <p className="text-xs sm:text-sm opacity-75">
+            Door dit formulier in te vullen ga je akkoord met onze privacy voorwaarden
+          </p>
+        </div>
       </footer>
     </div>
-  );
+  )
 }
