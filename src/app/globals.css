@@ -120,3 +120,20 @@
     @apply bg-background text-foreground;
   }
 }
+
+.btn-brood {
+  @apply bg-[#C6884A] text-white font-bold rounded-lg px-8 py-4 text-2xl transition-transform duration-200 ease-in-out;
+  border: 4px solid #8B5A2B;
+  box-shadow: 0 5px 0 #6d4621, 0 8px 10px rgba(0,0,0,0.2);
+}
+
+.btn-brood:hover {
+  @apply bg-[#D49A5F];
+  transform: translateY(-2px);
+  box-shadow: 0 7px 0 #6d4621, 0 10px 12px rgba(0,0,0,0.2);
+}
+
+.btn-brood:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #6d4621;
+}

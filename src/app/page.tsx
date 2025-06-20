@@ -2,352 +2,214 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
 import { Loader2, CheckCircle } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { BroodKaart } from "@/components/BroodKaart"
-import { broodOpties, bezorgTijden, straatOpties } from "@/data/broden"
+import { broodOpties, bezorgTijden, straatOpties, frequentieOpties } from "@/data/broden"
 // import { supabase } from "@/lib/supabase"
 
-const formSchema = z.object({
-  naam: z.string().min(2, 'Naam moet minimaal 2 karakters zijn'),
-  straat: z.string().min(1, 'Selecteer een straat'),
-  huisnummer: z.string().min(1, 'Vul een huisnummer in'),
-  email: z.string().email('Vul een geldig emailadres in'),
-  telefoon: z.string().optional(),
-  bezorgTijd: z.string().min(1, 'Selecteer een bezorgtijd'),
-  bezorgDagen: z.array(z.string()).min(1, 'Selecteer minimaal één bezorgdag'),
-  opmerkingen: z.string().optional()
-})
-
-type FormData = z.infer<typeof formSchema>
+type FormData = {
+  bezorgTijd?: string
+  frequentie?: string
+  broodSelectie?: Record<string, number>
+  naam?: string
+  straat?: string
+  huisnummer?: string
+  email?: string
+}
 
 export default function Home() {
-  const [broodAantallen, setBroodAantallen] = useState<Record<string, number>>({})
+  const [step, setStep] = useState(0) // 0: Landing, 1: Tijd, 2: Frequentie, 3: Brood, 4: Adres, 5: Succes
+  const [formData, setFormData] = useState<FormData>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors }
-  } = useForm<FormData>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      bezorgDagen: []
-    }
-  })
+  // State voor de stappen
+  const [broodAantallen, setBroodAantallen] = useState<Record<string, number>>({})
+  const [naam, setNaam] = useState('')
+  const [straat, setStraat] = useState('')
+  const [huisnummer, setHuisnummer] = useState('')
+  const [email, setEmail] = useState('')
 
-  const bezorgDagen = watch('bezorgDagen')
-
-  const onSubmit = async (data: FormData) => {
-    setIsSubmitting(true)
-    
-    const broodSelectie = Object.entries(broodAantallen)
-      .filter(([_, aantal]) => aantal > 0)
-      .map(([broodType, aantal]) => ({ broodType, aantal }))
-
-    // Combineer straat en huisnummer tot een volledig adres
-    const volledigAdres = `${data.straat} ${data.huisnummer}`;
-
-    // Tijdelijk uitgeschakeld voor debuggen
-    console.log("Formuliergegevens:", { ...data, adres: volledigAdres, broodSelectie })
-
-    // Simuleer een netwerkvertraging
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    setIsSuccess(true)
-    setIsSubmitting(false)
-
-    /* Oorspronkelijke Supabase code:
-    try {
-      const { error } = await supabase
-        .from('interesse_formulieren')
-        .insert({
-          ...data,
-          adres: `${data.straat} ${data.huisnummer}`,
-          brood_selectie: broodSelectie,
-          bezorg_tijd: data.bezorgTijd,
-          bezorg_dagen: data.bezorgDagen
-        })
-
-      if (error) throw error
-
-      setIsSuccess(true)
-    } catch (error) {
-      console.error('Error:', error)
-      alert('Er ging iets mis. Probeer het later opnieuw.')
-    } finally {
-      setIsSubmitting(false)
-    }
-    */
+  const handleNextStep = (data: Partial<FormData>) => {
+    setFormData(prev => ({ ...prev, ...data }))
+    setStep(prev => prev + 1)
   }
-
-  if (isSuccess) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-bakker-cream to-bakker-beige flex items-center justify-center p-4">
-        <Card className="max-w-md w-full">
-          <CardContent className="pt-6 text-center">
-            <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold mb-2">Bedankt voor je interesse!</h2>
-            <p className="text-muted-foreground">
-              We hebben je aanmelding ontvangen. We nemen snel contact met je op!
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
-  return (
-    <main className="min-h-screen bg-gradient-to-br from-bakker-cream to-bakker-beige">
-      {/* Logo & Hero sectie */}
-      <div className="pt-12 pb-8 sm:pt-16 sm:pb-12 px-4 text-center">
-        <Image
-          src="/bakkeraandedeurlogo.png" // Zorg ervoor dat je logo hier staat
-          alt="Bakker aan de Deur Logo"
-          width={200}
-          height={200}
-          className="mx-auto mb-4"
-          priority
-        />
-        <h1 className="text-4xl sm:text-5xl font-bold mb-2 text-bakker-donkerbruin tracking-tight">
-          Vers brood, thuisbezorgd
-        </h1>
-        <p className="text-lg sm:text-xl text-bakker-bruin max-w-2xl mx-auto">
-          Meld je interesse aan en geniet straks van vers gebakken brood aan huis!
-        </p>
-      </div>
-
-      {/* Formulier */}
-      <div className="max-w-4xl mx-auto p-4 sm:pb-8">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Persoonlijke gegevens */}
-          <Card className="bg-white/90 shadow-lg border-bakker-beige/50">
+  
+  const renderStep = () => {
+    switch (step) {
+      case 0: // Landing
+        return (
+          <div className="text-center">
+            <h2 className="text-2xl sm:text-3xl font-bold text-bakker-donkerbruin mb-8">
+              Lijkt het u wat om vers brood aan de deur te ontvangen?
+            </h2>
+            <div className="flex justify-center items-center gap-8">
+              <button onClick={() => setStep(1)} className="btn-brood">Ja!</button>
+              <button onClick={() => setStep(99)} className="btn-brood">Nee</button>
+            </div>
+          </div>
+        )
+      
+      case 1: // Bedankt & Tijd
+        return (
+          <Card className="w-full max-w-lg bg-white/90 shadow-lg">
             <CardHeader>
-              <CardTitle>Persoonlijke gegevens</CardTitle>
+              <CardTitle>Leuk! Wanneer komt het u uit?</CardTitle>
               <CardDescription>
-                Vul je gegevens in zodat we contact met je kunnen opnemen
+                Geef aan hoe laat we het brood uiterlijk moeten bezorgen voor een vers ontbijt.
               </CardDescription>
             </CardHeader>
-            <CardContent className="grid gap-6">
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="naam">Naam *</Label>
-                  <Input
-                    id="naam"
-                    {...register('naam')}
-                    placeholder="Jan Bakker"
-                  />
-                  {errors.naam && (
-                    <p className="text-sm text-red-600 mt-1">{errors.naam.message}</p>
-                  )}
-                </div>
-                <div>
-                  <Label htmlFor="email">Email *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    {...register('email')}
-                    placeholder="jan@example.com"
-                  />
-                  {errors.email && (
-                    <p className="text-sm text-red-600 mt-1">{errors.email.message}</p>
-                  )}
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-[1fr_auto] gap-4">
-                <div>
-                  <Label htmlFor="straat">Straat *</Label>
-                  <Select onValueChange={(value) => setValue('straat', value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecteer uw straat" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {straatOpties.map((straat) => (
-                        <SelectItem key={straat} value={straat}>
-                          {straat}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errors.straat && (
-                    <p className="text-sm text-red-600 mt-1">{errors.straat.message}</p>
-                  )}
-                </div>
-                <div>
-                  <Label htmlFor="huisnummer">Huisnummer *</Label>
-                  <Input
-                    id="huisnummer"
-                    {...register('huisnummer')}
-                    placeholder="bv. 123"
-                    className="w-32"
-                  />
-                  {errors.huisnummer && (
-                    <p className="text-sm text-red-600 mt-1">{errors.huisnummer.message}</p>
-                  )}
-                </div>
-              </div>
-              
-              <div>
-                <Label htmlFor="telefoon">Telefoon (optioneel)</Label>
-                <Input
-                  id="telefoon"
-                  type="tel"
-                  {...register('telefoon')}
-                  placeholder="06-12345678"
-                />
-              </div>
+            <CardContent className="space-y-4">
+              <Select onValueChange={(value) => handleNextStep({ bezorgTijd: value })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Kies een uiterlijke bezorgtijd" />
+                </SelectTrigger>
+                <SelectContent>
+                  {bezorgTijden.map((tijd) => <SelectItem key={tijd} value={tijd}>{tijd}</SelectItem>)}
+                </SelectContent>
+              </Select>
             </CardContent>
           </Card>
+        )
 
-          {/* Brood selectie */}
-          <Card className="bg-white/90 shadow-lg border-bakker-beige/50">
+      case 2: // Frequentie
+        return (
+          <Card className="w-full max-w-lg bg-white/90 shadow-lg">
             <CardHeader>
-              <CardTitle>Kies je brood</CardTitle>
+              <CardTitle>Hoe vaak zou u willen bestellen?</CardTitle>
               <CardDescription>
-                Geef aan hoeveel broden je ongeveer per keer zou willen bestellen
+                In het begin bezorgen we maximaal 2 keer per week. Dit helpt ons een inschatting te maken.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4">
+              {frequentieOpties.map(optie => (
+                <Button key={optie} onClick={() => handleNextStep({ frequentie: optie })} size="lg">
+                  {optie}
+                </Button>
+              ))}
+            </CardContent>
+          </Card>
+        )
+        
+      case 3: // Broodkeuze
+        return (
+          <Card className="w-full max-w-4xl bg-white/90 shadow-lg">
+            <CardHeader>
+              <CardTitle>Waar heeft u interesse in?</CardTitle>
+              <CardDescription>
+                Geef aan hoeveel (halve) broden u per keer verwacht te bestellen.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
                 {broodOpties.map((brood) => (
                   <BroodKaart
                     key={brood.id}
                     brood={brood}
                     aantal={broodAantallen[brood.id] || 0}
-                    onAantalChange={(aantal) => 
-                      setBroodAantallen(prev => ({ ...prev, [brood.id]: aantal }))
-                    }
+                    onAantalChange={(aantal) => setBroodAantallen(prev => ({ ...prev, [brood.id]: aantal }))}
                   />
                 ))}
               </div>
+              <Button onClick={() => handleNextStep({ broodSelectie: broodAantallen })} className="w-full" size="lg">
+                Volgende
+              </Button>
             </CardContent>
           </Card>
+        )
 
-          {/* Bezorg voorkeuren */}
-          <Card className="bg-white/90 shadow-lg border-bakker-beige/50">
+      case 4: // Adresgegevens
+        const handleFinalSubmit = async () => {
+          setIsSubmitting(true)
+          const finalData = { ...formData, naam, straat, huisnummer, email }
+          console.log("FINALE GEGEVENS:", finalData)
+          // Hier komt de Supabase code weer terug als we die aanzetten
+          await new Promise(resolve => setTimeout(resolve, 1000))
+          setIsSubmitting(false)
+          setStep(5)
+        }
+        
+        return (
+          <Card className="w-full max-w-lg bg-white/90 shadow-lg">
             <CardHeader>
-              <CardTitle>Bezorg voorkeuren</CardTitle>
+              <CardTitle>Bijna klaar!</CardTitle>
               <CardDescription>
-                Wanneer wil je je brood ontvangen?
+                We hebben alleen nog uw gegevens nodig.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4 sm:space-y-6">
-              <div>
-                <Label>Bezorgdagen *</Label>
-                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mt-2">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="dinsdag"
-                      checked={bezorgDagen?.includes('dinsdag')}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setValue('bezorgDagen', [...(bezorgDagen || []), 'dinsdag'])
-                        } else {
-                          setValue('bezorgDagen', bezorgDagen?.filter(d => d !== 'dinsdag') || [])
-                        }
-                      }}
-                    />
-                    <Label htmlFor="dinsdag">Dinsdag</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="vrijdag"
-                      checked={bezorgDagen?.includes('vrijdag')}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setValue('bezorgDagen', [...(bezorgDagen || []), 'vrijdag'])
-                        } else {
-                          setValue('bezorgDagen', bezorgDagen?.filter(d => d !== 'vrijdag') || [])
-                        }
-                      }}
-                    />
-                    <Label htmlFor="vrijdag">Vrijdag</Label>
-                  </div>
+            <CardContent className="space-y-4">
+               <div className="space-y-1">
+                <Label htmlFor="naam">Naam</Label>
+                <Input id="naam" value={naam} onChange={(e) => setNaam(e.target.value)} placeholder="Jan Bakker" />
+              </div>
+               <div className="space-y-1">
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="jan@example.com" />
+              </div>
+              <div className="grid grid-cols-[1fr_auto] gap-4">
+                <div className="space-y-1">
+                  <Label htmlFor="straat">Straat</Label>
+                  <Select onValueChange={setStraat}>
+                    <SelectTrigger><SelectValue placeholder="Kies uw straat" /></SelectTrigger>
+                    <SelectContent>
+                      {straatOpties.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
                 </div>
-                {errors.bezorgDagen && (
-                  <p className="text-sm text-red-600 mt-1">{errors.bezorgDagen.message}</p>
-                )}
+                <div className="space-y-1">
+                  <Label htmlFor="huisnummer">Huisnummer</Label>
+                  <Input id="huisnummer" value={huisnummer} onChange={(e) => setHuisnummer(e.target.value)} placeholder="123" className="w-28"/>
+                </div>
               </div>
-
-              <div>
-                <Label htmlFor="bezorgTijd">Uiterlijke bezorgtijd *</Label>
-                <Select onValueChange={(value) => setValue('bezorgTijd', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecteer een tijd" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {bezorgTijden.map((tijd) => (
-                      <SelectItem key={tijd} value={tijd}>
-                        {tijd}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {errors.bezorgTijd && (
-                  <p className="text-sm text-red-600 mt-1">{errors.bezorgTijd.message}</p>
-                )}
-              </div>
+              <Button onClick={handleFinalSubmit} disabled={isSubmitting || !naam || !email || !straat || !huisnummer} className="w-full" size="lg">
+                 {isSubmitting ? <Loader2 className="animate-spin" /> : 'Verstuur mijn interesse'}
+              </Button>
             </CardContent>
           </Card>
+        )
 
-          {/* Opmerkingen */}
-          <Card className="bg-white/90 shadow-lg border-bakker-beige/50">
-            <CardHeader>
-              <CardTitle>Aanvullende informatie</CardTitle>
-              <CardDescription>
-                Heb je speciale wensen of opmerkingen?
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Textarea
-                {...register('opmerkingen')}
-                placeholder="Heeft u nog ideeen, tips, vragen of opmerkingen?"
-                rows={4}
-              />
+      case 5: // Succes
+        return (
+          <Card className="w-full max-w-lg bg-white/90 shadow-lg text-center">
+            <CardContent className="p-8">
+              <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
+              <h2 className="text-2xl font-bold mb-2">Bedankt voor het invullen!</h2>
+              <p className="text-muted-foreground">We hebben al uw antwoorden ontvangen. We houden u op de hoogte!</p>
             </CardContent>
           </Card>
+        )
+        
+      case 99: // Nee-pad
+         return (
+          <Card className="w-full max-w-lg bg-white/90 shadow-lg text-center">
+             <CardContent className="p-8">
+              <h2 className="text-2xl font-bold mb-2">Jammer!</h2>
+              <p className="text-muted-foreground">Toch bedankt voor uw tijd. Mocht u zich bedenken, dan weet u ons te vinden!</p>
+            </CardContent>
+          </Card>
+        )
 
-          {/* Submit button */}
-          <Button 
-            type="submit" 
-            size="lg" 
-            className="w-full bg-bakker-bruin hover:bg-bakker-donkerbruin text-lg"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Versturen...
-              </>
-            ) : (
-              'Verstuur mijn interesse'
-            )}
-          </Button>
-        </form>
+      default:
+        return null
+    }
+  }
+
+  return (
+    <main className="min-h-screen bg-gradient-to-br from-bakker-cream to-bakker-beige flex flex-col items-center justify-center p-4">
+      <div className="absolute top-8 left-1/2 -translate-x-1/2">
+        <Image
+          src="/bakkeraandedeurlogo.png"
+          alt="Bakker aan de Deur Logo"
+          width={150}
+          height={150}
+          priority
+        />
       </div>
-
-      {/* Footer */}
-      <footer className="text-center py-6 px-4 mt-12">
-        <div className="max-w-4xl mx-auto text-bakker-donkerbruin/80">
-          <p className="mb-2">© 2024 Bakker aan de Deur</p>
-          <p className="text-xs sm:text-sm opacity-75">
-            Door dit formulier in te vullen ga je akkoord met onze privacy voorwaarden
-          </p>
-        </div>
-      </footer>
+      {renderStep()}
     </main>
   )
 }

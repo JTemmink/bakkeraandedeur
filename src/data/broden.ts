@@ -24,4 +24,9 @@ export const straatOpties = [
   'Menuetstraat',
   'Etudestraat',
   'Polkastraat'
+]
+
+export const frequentieOpties = [
+  '1 keer per week',
+  '2 keer per week'
 ] 
