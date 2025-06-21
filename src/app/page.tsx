@@ -6,8 +6,6 @@ import { Loader2, CheckCircle, Minus, Plus } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { frequentieOpties, straatOpties, bezorgTijden } from "@/data/broden"
 // import { supabase } from "@/lib/supabase"
 
@@ -65,20 +63,6 @@ const CroissantButton = ({ onClick, children, className = '' }: { onClick: () =>
       <path d="M 120,85 Q 130,75 140,85" stroke="#c89a5a" strokeWidth="4" fill="none" />
     </svg>
     <span className="relative z-10 font-bold text-xl text-stone-800 group-hover:text-stone-900 transition-colors" style={{ textShadow: '1px 1px 1px rgba(255,255,255,0.5)' }}>
-      {children}
-    </span>
-  </button>
-);
-
-const BroodbolletjeButton = ({ onClick, children, className = '' }: { onClick: () => void; children: React.ReactNode, className?: string }) => (
-  <button
-    onClick={onClick}
-    className={`relative w-40 h-40 rounded-full bg-[#f2d5a3] hover:bg-[#eac88a] transition-all duration-200 flex items-center justify-center group shadow-lg ${className}`}
-    style={{
-      boxShadow: '0 6px 10px rgba(101, 59, 12, 0.2), inset 0 0 15px rgba(101, 59, 12, 0.2), inset 0 5px 5px rgba(255,255,255,0.5)'
-    }}
-  >
-    <span className="relative z-10 font-bold text-2xl text-stone-800 group-hover:text-stone-900 transition-colors" style={{ textShadow: '1px 1px 2px rgba(255,255,255,0.7)' }}>
       {children}
     </span>
   </button>
@@ -323,12 +307,10 @@ export default function Home() {
         
       case 99: // Nee-pad
          return (
-          <Card className="w-full max-w-lg bg-white/90 shadow-lg text-center">
-             <CardContent className="p-8">
-              <h2 className="text-2xl font-bold mb-2">Jammer!</h2>
-              <p className="text-muted-foreground">Toch bedankt voor uw tijd. Mocht u zich bedenken, dan weet u ons te vinden!</p>
-            </CardContent>
-          </Card>
+          <div className="w-full max-w-lg text-center">
+             <h2 className="text-2xl font-bold mb-2">Jammer!</h2>
+             <p className="text-muted-foreground">Toch bedankt voor uw tijd. Mocht u zich bedenken, dan weet u ons te vinden!</p>
+          </div>
         )
 
       default:
@@ -338,15 +320,17 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-start sm:justify-center p-4 pt-28 sm:p-8 relative overflow-hidden">
-      {/* Background image */}
       <Image
         src="/bakkeraandedeurlogo.png"
-        alt="Bakker aan de Deur Logo"
-        width={150}
-        height={150}
+        alt="Bakker aan de deur logo"
+        width={200}
+        height={100}
+        className="absolute top-8 left-1/2 -translate-x-1/2 z-20"
         priority
       />
-      {renderStep()}
+      <div className="z-10 w-full flex items-center justify-center">
+        {renderStep()}
+      </div>
     </main>
   )
 }
