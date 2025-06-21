@@ -319,16 +319,17 @@ export default function Home() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-start sm:justify-center p-4 pt-40 sm:p-8 relative overflow-hidden">
-      <Image
-        src="/bakkeraandedeurlogo.png"
-        alt="Bakker aan de deur logo"
-        width={200}
-        height={100}
-        className="absolute top-8 left-1/2 -translate-x-1/2 z-20"
-        priority
-      />
-      <div className="z-10 w-full flex items-center justify-center">
+    <main className="flex min-h-screen flex-col items-center justify-center p-4">
+      <div className="mb-8">
+        <Image
+          src="/bakkeraandedeurlogo.png"
+          alt="Bakker aan de deur logo"
+          width={200}
+          height={100}
+          priority
+        />
+      </div>
+      <div className="w-full flex items-center justify-center">
         {renderStep()}
       </div>
     </main>
