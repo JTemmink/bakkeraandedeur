@@ -48,19 +48,22 @@ const StokbroodButton = ({ onClick, children }: { onClick: () => void; children:
   </button>
 );
 
-const CroissantButton = ({ onClick, children }: { onClick: () => void; children: React.ReactNode }) => (
+const CroissantButton = ({ onClick, children, className = '' }: { onClick: () => void; children: React.ReactNode, className?: string }) => (
   <button
     onClick={onClick}
-    className="relative w-full h-20 bg-transparent flex items-center justify-center group"
+    className={`relative w-48 h-28 bg-transparent flex items-center justify-center group ${className}`}
   >
-    <div 
-      className="absolute w-full h-full bg-[#f2d5a3] transition-all duration-200 group-hover:bg-[#eac88a]"
-      style={{
-        borderRadius: '50% / 100% 100% 0 0',
-        transform: 'scale(1, 0.5)',
-        boxShadow: '0 4px 6px -1px rgba(101, 59, 12, 0.2), inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -4px 5px rgba(101, 59, 12, 0.3)'
-      }}
-    ></div>
+    <svg viewBox="0 0 200 120" className="absolute w-full h-full drop-shadow-lg">
+      <path
+        d="M 10,110 A 90,90 0 0,1 190,110 L 170,110 A 70,70 0 0,0 30,110 Z"
+        fill="#f2d5a3"
+        stroke="#d4a76a"
+        strokeWidth="3"
+      />
+      <path d="M 40,80 Q 50,70 60,80" stroke="#c89a5a" strokeWidth="4" fill="none" />
+      <path d="M 80,95 Q 90,85 100,95" stroke="#c89a5a" strokeWidth="4" fill="none" />
+      <path d="M 120,85 Q 130,75 140,85" stroke="#c89a5a" strokeWidth="4" fill="none" />
+    </svg>
     <span className="relative z-10 font-bold text-xl text-stone-800 group-hover:text-stone-900 transition-colors" style={{ textShadow: '1px 1px 1px rgba(255,255,255,0.5)' }}>
       {children}
     </span>
@@ -119,8 +122,8 @@ export default function Home() {
             <h1 className="text-4xl sm:text-5xl font-bold text-stone-800 mb-4" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.1)'}}>Interesse in brood aan de deur?</h1>
             <p className="text-xl text-stone-700 mb-8">Laat het ons weten!</p>
             <div className="flex justify-center gap-8">
-              <BroodbolletjeButton onClick={() => setStep(1)}>Ja!</BroodbolletjeButton>
-              <BroodbolletjeButton onClick={() => window.location.href='https://www.google.com'}>Nee</BroodbolletjeButton>
+              <CroissantButton onClick={() => setStep(1)}>Ja!</CroissantButton>
+              <CroissantButton onClick={() => window.location.href='https://www.google.com'}>Nee</CroissantButton>
             </div>
           </div>
         )
@@ -131,11 +134,11 @@ export default function Home() {
             <CardHeader className="text-center">
               <CardTitle className="text-3xl">Hoe laat zou u het liefst uw brood ontvangen?</CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2">
+            <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                 {bezorgTijden.map((tijd) => (
-                    <CroissantButton key={tijd} onClick={() => handleNextStep({ bezorgTijd: tijd })}>
+                    <StokbroodButton key={tijd} onClick={() => handleNextStep({ bezorgTijd: tijd })}>
                         {tijd}
-                    </CroissantButton>
+                    </StokbroodButton>
                 ))}
             </CardContent>
           </Card>
@@ -145,13 +148,13 @@ export default function Home() {
         return (
           <Card className="w-full max-w-lg bg-white/90 shadow-lg">
             <CardHeader className="text-center">
-              <CardTitle className="text-3xl">Hoe vaak wilt u brood ontvangen?</CardTitle>
+              <CardTitle className="text-3xl">Hoe vaak per week?</CardTitle>
             </CardHeader>
             <CardContent className="flex justify-center items-center gap-8 pt-4">
               {frequentieOpties.map((optie) => (
-                <BroodbolletjeButton key={optie} onClick={() => handleNextStep({ frequentie: optie })}>
+                <CroissantButton key={optie} onClick={() => handleNextStep({ frequentie: optie })}>
                   {optie}
-                </BroodbolletjeButton>
+                </CroissantButton>
               ))}
             </CardContent>
           </Card>
