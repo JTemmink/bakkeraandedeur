@@ -6,6 +6,8 @@ import { Loader2, CheckCircle, Minus, Plus } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { frequentieOpties, straatOpties, bezorgTijden } from "@/data/broden"
 // import { supabase } from "@/lib/supabase"
 
@@ -22,11 +24,10 @@ type FormData = {
   telefoonnummer?: string
 }
 
-const StokbroodButton = ({ onClick, children, disabled }: { onClick: () => void; children: React.ReactNode, disabled?: boolean }) => (
+const StokbroodButton = ({ onClick, children }: { onClick: () => void; children: React.ReactNode }) => (
   <button
     onClick={onClick}
-    disabled={disabled}
-    className="relative w-full h-16 border-2 border-amber-800/80 rounded-full bg-[#f2d5a3] hover:bg-[#eac88a] transition-all duration-200 flex items-center justify-center group shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
+    className="relative w-full h-16 border-2 border-amber-800/80 rounded-full bg-[#f2d5a3] hover:bg-[#eac88a] transition-all duration-200 flex items-center justify-center group shadow-lg"
     style={{
       boxShadow: '0 4px 6px -1px rgba(101, 59, 12, 0.2), 0 2px 4px -1px rgba(101, 59, 12, 0.15), inset 0 -4px 5px rgba(101, 59, 12, 0.3)'
     }}
@@ -41,28 +42,6 @@ const StokbroodButton = ({ onClick, children, disabled }: { onClick: () => void;
         <div className="absolute w-2 h-24 bg-amber-900/20 transform -rotate-45 translate-x-28 -translate-y-4"></div>
     </div>
 
-    <span className="relative z-10 font-bold text-xl text-stone-800 group-hover:text-stone-900 transition-colors" style={{ textShadow: '1px 1px 1px rgba(255,255,255,0.5)' }}>
-      {children}
-    </span>
-  </button>
-);
-
-const CroissantButton = ({ onClick, children, className = '' }: { onClick: () => void; children: React.ReactNode, className?: string }) => (
-  <button
-    onClick={onClick}
-    className={`relative w-48 h-28 bg-transparent flex items-center justify-center group ${className}`}
-  >
-    <svg viewBox="0 0 200 120" className="absolute w-full h-full drop-shadow-lg">
-      <path
-        d="M 10,110 A 90,90 0 0,1 190,110 L 170,110 A 70,70 0 0,0 30,110 Z"
-        fill="#f2d5a3"
-        stroke="#d4a76a"
-        strokeWidth="3"
-      />
-      <path d="M 40,80 Q 50,70 60,80" stroke="#c89a5a" strokeWidth="4" fill="none" />
-      <path d="M 80,95 Q 90,85 100,95" stroke="#c89a5a" strokeWidth="4" fill="none" />
-      <path d="M 120,85 Q 130,75 140,85" stroke="#c89a5a" strokeWidth="4" fill="none" />
-    </svg>
     <span className="relative z-10 font-bold text-xl text-stone-800 group-hover:text-stone-900 transition-colors" style={{ textShadow: '1px 1px 1px rgba(255,255,255,0.5)' }}>
       {children}
     </span>
@@ -97,53 +76,66 @@ export default function Home() {
             <p className="text-xl text-stone-700 mb-8">Laat het ons weten!</p>
             <div className="flex justify-center gap-4 flex-col sm:flex-row items-center">
               <button onClick={() => setStep(1)} className="transition-transform hover:scale-105">
-                <Image src="/croissant-ja.png" alt="Ja" width={200} height={200} />
+                <Image src="/croissant%20ja.png" alt="Ja" width={200} height={200} />
               </button>
               <button onClick={() => window.location.href='https://www.google.com'} className="transition-transform hover:scale-105">
-                <Image src="/croissant-nee.png" alt="Nee" width={200} height={200} />
+                <Image src="/croissant%20nee.png" alt="Nee" width={200} height={200} />
               </button>
             </div>
           </div>
         )
       
-      case 1: // Tijd
+      case 1: // Bedankt & Tijd
         return (
-          <div className="w-full max-w-2xl text-center">
-            <h2 className="text-3xl font-bold mb-6">Hoe laat zou u het liefst uw brood ontvangen?</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                {bezorgTijden.map((tijd) => (
-                    <StokbroodButton key={tijd} onClick={() => handleNextStep({ bezorgTijd: tijd })}>
-                        {tijd}
-                    </StokbroodButton>
-                ))}
-            </div>
-          </div>
+          <Card className="w-full max-w-lg bg-white/90 shadow-lg">
+            <CardHeader>
+              <CardTitle>Leuk! Wanneer komt het u uit?</CardTitle>
+              <CardDescription>
+                Geef aan hoe laat we het brood uiterlijk moeten bezorgen voor een vers ontbijt.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Select onValueChange={(value) => handleNextStep({ bezorgTijd: value })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Kies een uiterlijke bezorgtijd" />
+                </SelectTrigger>
+                <SelectContent>
+                  {bezorgTijden.map((tijd) => <SelectItem key={tijd} value={tijd}>{tijd}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </CardContent>
+          </Card>
         )
 
       case 2: // Frequentie
         return (
-          <div className="w-full max-w-lg text-center">
-            <h2 className="text-3xl font-bold mb-6">Hoe vaak per week?</h2>
-            <div className="flex justify-center items-center gap-8 pt-4">
-              {frequentieOpties.map((optie) => (
-                <CroissantButton key={optie} onClick={() => handleNextStep({ frequentie: optie })}>
+          <Card className="w-full max-w-lg bg-white/90 shadow-lg">
+            <CardHeader>
+              <CardTitle>Hoe vaak zou u willen bestellen?</CardTitle>
+              <CardDescription>
+                In het begin bezorgen we maximaal 2 keer per week. Dit helpt ons een inschatting te maken.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4">
+              {frequentieOpties.map(optie => (
+                <Button key={optie} onClick={() => handleNextStep({ frequentie: optie })} size="lg">
                   {optie}
-                </CroissantButton>
+                </Button>
               ))}
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         )
         
       case 3: // Broodkeuze
         return (
-          <div className="w-full max-w-lg">
-            <div className="text-center mb-6">
-              <h2 className="text-3xl font-bold">Waar heeft u interesse in?</h2>
-              <p className="text-muted-foreground mt-2">
+          <Card className="w-full max-w-lg bg-white/90 shadow-lg">
+            <CardHeader>
+              <CardTitle>Waar heeft u interesse in?</CardTitle>
+              <CardDescription>
                 Geef een schatting van het aantal producten dat u per keer verwacht te bestellen.
-              </p>
-            </div>
-            <div className="space-y-6">
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
               {/* Teller voor Hele Broden */}
               <div className="flex items-center justify-between">
                 <Label htmlFor="aantal-hele-broden" className="text-lg">Aantal hele broden</Label>
@@ -186,28 +178,30 @@ export default function Home() {
                 </div>
               </div>
               
-              <StokbroodButton onClick={() => handleNextStep({ aantalHeleBroden, aantalHalveBroden, aantalOverige })}>
+              <Button onClick={() => handleNextStep({ aantalHeleBroden, aantalHalveBroden, aantalOverige })} className="w-full !mt-8" size="lg">
                 Volgende
-              </StokbroodButton>
-            </div>
-          </div>
+              </Button>
+            </CardContent>
+          </Card>
         )
 
       case 4: // Straatkeuze
         return (
-          <div className="w-full max-w-lg text-center">
-            <h2 className="text-3xl font-bold">In welke straat woont u?</h2>
-            <p className="text-muted-foreground mt-2 mb-6">
-              Selecteer uw straat. We bezorgen alleen in deze vier straten.
-            </p>
-            <div className="grid grid-cols-1 gap-4 pt-2">
+          <Card className="w-full max-w-lg bg-white/90 shadow-lg">
+            <CardHeader>
+              <CardTitle>In welke straat woont u?</CardTitle>
+              <CardDescription>
+                Selecteer uw straat. We bezorgen alleen in deze vier straten.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 gap-4 pt-2">
               {straatOpties.map((straat) => (
                 <StokbroodButton key={straat.value} onClick={() => handleNextStep({ straat: straat.value })}>
                   {straat.label}
                 </StokbroodButton>
               ))}
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         );
 
       case 5: // Huisnummer
@@ -233,23 +227,22 @@ export default function Home() {
         }
 
         return (
-          <div className="w-full max-w-lg">
-            <div className="text-center mb-6">
-              <h2 className="text-3xl font-bold">Wat is uw huisnummer?</h2>
-              <p className="text-muted-foreground mt-2">
-                Vul hieronder uw gegevens in om de aanvraag te voltooien.
-              </p>
-            </div>
-            <div className="space-y-6">
-              <div className="space-y-2 flex flex-col items-center">
+          <Card className="w-full max-w-lg bg-white/90 shadow-lg">
+            <CardHeader>
+              <CardTitle>Wat is uw huisnummer?</CardTitle>
+              <CardDescription>
+                Vul hieronder uw huisnummer en eventuele toevoeging in.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-2">
                 <Label htmlFor="huisnummer" className="text-lg">Huisnummer</Label>
                 <Input
                   id="huisnummer"
-                  placeholder=""
+                  placeholder="bv. 12a"
                   value={huisnummer}
                   onChange={(e) => setHuisnummer(e.target.value)}
-                  className="housenumber-input"
-                  autoFocus
+                  className="text-base"
                 />
               </div>
               <div className="space-y-2">
@@ -283,28 +276,33 @@ export default function Home() {
                   className="text-base"
                 />
               </div>
-              <StokbroodButton onClick={handleFinalSubmit} disabled={isSubmitting || !huisnummer || !email}>
-                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Verzenden"}
-              </StokbroodButton>
-            </div>
-          </div>
+              <Button onClick={handleFinalSubmit} disabled={isSubmitting || !huisnummer || !email} className="w-full !mt-8" size="lg">
+                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                Verzenden
+              </Button>
+            </CardContent>
+          </Card>
         )
 
       case 6: // Succes
         return (
-          <div className="w-full max-w-lg text-center">
-            <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-            <h2 className="text-3xl font-bold mb-2">Bedankt voor het invullen!</h2>
-            <p className="text-muted-foreground">We hebben al uw antwoorden ontvangen. We houden u op de hoogte!</p>
-          </div>
+          <Card className="w-full max-w-lg bg-white/90 shadow-lg text-center">
+            <CardContent className="p-8">
+              <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+              <h2 className="text-2xl font-bold mb-2">Bedankt voor het invullen!</h2>
+              <p className="text-muted-foreground">We hebben al uw antwoorden ontvangen. We houden u op de hoogte!</p>
+            </CardContent>
+          </Card>
         )
         
       case 99: // Nee-pad
          return (
-          <div className="w-full max-w-lg text-center">
-             <h2 className="text-2xl font-bold mb-2">Jammer!</h2>
-             <p className="text-muted-foreground">Toch bedankt voor uw tijd. Mocht u zich bedenken, dan weet u ons te vinden!</p>
-          </div>
+          <Card className="w-full max-w-lg bg-white/90 shadow-lg text-center">
+             <CardContent className="p-8">
+              <h2 className="text-2xl font-bold mb-2">Jammer!</h2>
+              <p className="text-muted-foreground">Toch bedankt voor uw tijd. Mocht u zich bedenken, dan weet u ons te vinden!</p>
+            </CardContent>
+          </Card>
         )
 
       default:
@@ -313,19 +311,16 @@ export default function Home() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4">
-      <div className="mb-8">
-        <Image
-          src="/bakkeraandedeurlogo.png"
-          alt="Bakker aan de deur logo"
-          width={200}
-          height={100}
-          priority
-        />
-      </div>
-      <div className="w-full flex items-center justify-center">
-        {renderStep()}
-      </div>
+    <main className="flex min-h-screen flex-col items-center justify-start sm:justify-center p-4 pt-28 sm:p-8 relative overflow-hidden">
+      {/* Background image */}
+      <Image
+        src="/bakkeraandedeurlogo.png"
+        alt="Bakker aan de Deur Logo"
+        width={150}
+        height={150}
+        priority
+      />
+      {renderStep()}
     </main>
   )
 }
