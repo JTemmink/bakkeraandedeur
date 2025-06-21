@@ -48,6 +48,50 @@ const StokbroodButton = ({ onClick, children }: { onClick: () => void; children:
   </button>
 );
 
+const CroissantButton = ({ onClick, children }: { onClick: () => void; children: React.ReactNode }) => (
+  <button
+    onClick={onClick}
+    className="relative w-full h-20 bg-transparent flex items-center justify-center group"
+  >
+    <div 
+      className="absolute w-full h-full bg-[#f2d5a3] transition-all duration-200 group-hover:bg-[#eac88a]"
+      style={{
+        borderRadius: '50% / 100% 100% 0 0',
+        transform: 'scale(1, 0.5)',
+        boxShadow: '0 4px 6px -1px rgba(101, 59, 12, 0.2), inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -4px 5px rgba(101, 59, 12, 0.3)'
+      }}
+    ></div>
+    <span className="relative z-10 font-bold text-xl text-stone-800 group-hover:text-stone-900 transition-colors" style={{ textShadow: '1px 1px 1px rgba(255,255,255,0.5)' }}>
+      {children}
+    </span>
+  </button>
+);
+
+const BroodbolletjeButton = ({ onClick, children, className = '' }: { onClick: () => void; children: React.ReactNode, className?: string }) => (
+  <button
+    onClick={onClick}
+    className={`relative w-40 h-40 rounded-full bg-[#f2d5a3] hover:bg-[#eac88a] transition-all duration-200 flex items-center justify-center group shadow-lg ${className}`}
+    style={{
+      boxShadow: '0 6px 10px rgba(101, 59, 12, 0.2), inset 0 0 15px rgba(101, 59, 12, 0.2), inset 0 5px 5px rgba(255,255,255,0.5)'
+    }}
+  >
+    <span className="relative z-10 font-bold text-2xl text-stone-800 group-hover:text-stone-900 transition-colors" style={{ textShadow: '1px 1px 2px rgba(255,255,255,0.7)' }}>
+      {children}
+    </span>
+  </button>
+);
+
+const ActionButton = ({ onClick, children, disabled }: { onClick: () => void, children: React.ReactNode, disabled?: boolean }) => (
+    <Button 
+        onClick={onClick} 
+        disabled={disabled} 
+        className="w-full !mt-8 bg-amber-700 hover:bg-amber-800 text-white text-xl" 
+        size="lg"
+    >
+        {children}
+    </Button>
+);
+
 export default function Home() {
   const [step, setStep] = useState(0) // 0: Landing, 1: Tijd, 2: Frequentie, 3: Brood, 4: Straat, 5: Huisnummer, 6: Succes
   const [formData, setFormData] = useState<FormData>({})
@@ -72,34 +116,27 @@ export default function Home() {
       case 0: // Landing
         return (
           <div className="text-center">
-            <h2 className="text-2xl sm:text-3xl font-bold text-bakker-donkerbruin mb-8">
-              Lijkt het u wat om vers brood aan de deur te ontvangen?
-            </h2>
-            <div className="flex justify-center items-center gap-8">
-              <button onClick={() => setStep(1)} className="btn-brood">Ja!</button>
-              <button onClick={() => setStep(99)} className="btn-brood">Nee</button>
+            <h1 className="text-4xl sm:text-5xl font-bold text-stone-800 mb-4" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.1)'}}>Interesse in brood aan de deur?</h1>
+            <p className="text-xl text-stone-700 mb-8">Laat het ons weten!</p>
+            <div className="flex justify-center gap-8">
+              <BroodbolletjeButton onClick={() => setStep(1)}>Ja!</BroodbolletjeButton>
+              <BroodbolletjeButton onClick={() => window.location.href='https://www.google.com'}>Nee</BroodbolletjeButton>
             </div>
           </div>
         )
       
-      case 1: // Bedankt & Tijd
+      case 1: // Tijd
         return (
-          <Card className="w-full max-w-lg bg-white/90 shadow-lg">
-            <CardHeader>
-              <CardTitle>Leuk! Wanneer komt het u uit?</CardTitle>
-              <CardDescription>
-                Geef aan hoe laat we het brood uiterlijk moeten bezorgen voor een vers ontbijt.
-              </CardDescription>
+          <Card className="w-full max-w-2xl bg-white/90 shadow-lg">
+            <CardHeader className="text-center">
+              <CardTitle className="text-3xl">Hoe laat zou u het liefst uw brood ontvangen?</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <Select onValueChange={(value) => handleNextStep({ bezorgTijd: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Kies een uiterlijke bezorgtijd" />
-                </SelectTrigger>
-                <SelectContent>
-                  {bezorgTijden.map((tijd) => <SelectItem key={tijd} value={tijd}>{tijd}</SelectItem>)}
-                </SelectContent>
-              </Select>
+            <CardContent className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2">
+                {bezorgTijden.map((tijd) => (
+                    <CroissantButton key={tijd} onClick={() => handleNextStep({ bezorgTijd: tijd })}>
+                        {tijd}
+                    </CroissantButton>
+                ))}
             </CardContent>
           </Card>
         )
@@ -107,17 +144,14 @@ export default function Home() {
       case 2: // Frequentie
         return (
           <Card className="w-full max-w-lg bg-white/90 shadow-lg">
-            <CardHeader>
-              <CardTitle>Hoe vaak zou u willen bestellen?</CardTitle>
-              <CardDescription>
-                In het begin bezorgen we maximaal 2 keer per week. Dit helpt ons een inschatting te maken.
-              </CardDescription>
+            <CardHeader className="text-center">
+              <CardTitle className="text-3xl">Hoe vaak wilt u brood ontvangen?</CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col gap-4">
-              {frequentieOpties.map(optie => (
-                <Button key={optie} onClick={() => handleNextStep({ frequentie: optie })} size="lg">
+            <CardContent className="flex justify-center items-center gap-8 pt-4">
+              {frequentieOpties.map((optie) => (
+                <BroodbolletjeButton key={optie} onClick={() => handleNextStep({ frequentie: optie })}>
                   {optie}
-                </Button>
+                </BroodbolletjeButton>
               ))}
             </CardContent>
           </Card>
@@ -175,9 +209,9 @@ export default function Home() {
                 </div>
               </div>
               
-              <Button onClick={() => handleNextStep({ aantalHeleBroden, aantalHalveBroden, aantalOverige })} className="w-full !mt-8" size="lg">
+              <ActionButton onClick={() => handleNextStep({ aantalHeleBroden, aantalHalveBroden, aantalOverige })}>
                 Volgende
-              </Button>
+              </ActionButton>
             </CardContent>
           </Card>
         )
@@ -273,10 +307,10 @@ export default function Home() {
                   className="text-base"
                 />
               </div>
-              <Button onClick={handleFinalSubmit} disabled={isSubmitting || !huisnummer || !email} className="w-full !mt-8" size="lg">
+              <ActionButton onClick={handleFinalSubmit} disabled={isSubmitting || !huisnummer || !email}>
                 {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Verzenden
-              </Button>
+              </ActionButton>
             </CardContent>
           </Card>
         )
