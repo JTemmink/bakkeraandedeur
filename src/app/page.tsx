@@ -130,46 +130,42 @@ export default function Home() {
       
       case 1: // Tijd
         return (
-          <Card className="w-full max-w-2xl bg-white/90 shadow-lg">
-            <CardHeader className="text-center">
-              <CardTitle className="text-3xl">Hoe laat zou u het liefst uw brood ontvangen?</CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+          <div className="w-full max-w-2xl text-center">
+            <h2 className="text-3xl font-bold mb-6">Hoe laat zou u het liefst uw brood ontvangen?</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                 {bezorgTijden.map((tijd) => (
                     <StokbroodButton key={tijd} onClick={() => handleNextStep({ bezorgTijd: tijd })}>
                         {tijd}
                     </StokbroodButton>
                 ))}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )
 
       case 2: // Frequentie
         return (
-          <Card className="w-full max-w-lg bg-white/90 shadow-lg">
-            <CardHeader className="text-center">
-              <CardTitle className="text-3xl">Hoe vaak per week?</CardTitle>
-            </CardHeader>
-            <CardContent className="flex justify-center items-center gap-8 pt-4">
+          <div className="w-full max-w-lg text-center">
+            <h2 className="text-3xl font-bold mb-6">Hoe vaak per week?</h2>
+            <div className="flex justify-center items-center gap-8 pt-4">
               {frequentieOpties.map((optie) => (
                 <CroissantButton key={optie} onClick={() => handleNextStep({ frequentie: optie })}>
                   {optie}
                 </CroissantButton>
               ))}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )
         
       case 3: // Broodkeuze
         return (
-          <Card className="w-full max-w-lg bg-white/90 shadow-lg">
-            <CardHeader>
-              <CardTitle>Waar heeft u interesse in?</CardTitle>
-              <CardDescription>
+          <div className="w-full max-w-lg">
+            <div className="text-center mb-6">
+              <h2 className="text-3xl font-bold">Waar heeft u interesse in?</h2>
+              <p className="text-muted-foreground mt-2">
                 Geef een schatting van het aantal producten dat u per keer verwacht te bestellen.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
+              </p>
+            </div>
+            <div className="space-y-6">
               {/* Teller voor Hele Broden */}
               <div className="flex items-center justify-between">
                 <Label htmlFor="aantal-hele-broden" className="text-lg">Aantal hele broden</Label>
@@ -215,27 +211,25 @@ export default function Home() {
               <ActionButton onClick={() => handleNextStep({ aantalHeleBroden, aantalHalveBroden, aantalOverige })}>
                 Volgende
               </ActionButton>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )
 
       case 4: // Straatkeuze
         return (
-          <Card className="w-full max-w-lg bg-white/90 shadow-lg">
-            <CardHeader>
-              <CardTitle>In welke straat woont u?</CardTitle>
-              <CardDescription>
-                Selecteer uw straat. We bezorgen alleen in deze vier straten.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 gap-4 pt-2">
+          <div className="w-full max-w-lg text-center">
+            <h2 className="text-3xl font-bold">In welke straat woont u?</h2>
+            <p className="text-muted-foreground mt-2 mb-6">
+              Selecteer uw straat. We bezorgen alleen in deze vier straten.
+            </p>
+            <div className="grid grid-cols-1 gap-4 pt-2">
               {straatOpties.map((straat) => (
                 <StokbroodButton key={straat.value} onClick={() => handleNextStep({ straat: straat.value })}>
                   {straat.label}
                 </StokbroodButton>
               ))}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         );
 
       case 5: // Huisnummer
@@ -261,14 +255,14 @@ export default function Home() {
         }
 
         return (
-          <Card className="w-full max-w-lg bg-white/90 shadow-lg">
-            <CardHeader>
-              <CardTitle>Wat is uw huisnummer?</CardTitle>
-              <CardDescription>
-                Vul hieronder uw huisnummer en eventuele toevoeging in.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
+          <div className="w-full max-w-lg">
+            <div className="text-center mb-6">
+              <h2 className="text-3xl font-bold">Wat is uw huisnummer?</h2>
+              <p className="text-muted-foreground mt-2">
+                Vul hieronder uw gegevens in om de aanvraag te voltooien.
+              </p>
+            </div>
+            <div className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="huisnummer" className="text-lg">Huisnummer</Label>
                 <Input
@@ -314,19 +308,17 @@ export default function Home() {
                 {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Verzenden
               </ActionButton>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )
 
       case 6: // Succes
         return (
-          <Card className="w-full max-w-lg bg-white/90 shadow-lg text-center">
-            <CardContent className="p-8">
-              <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold mb-2">Bedankt voor het invullen!</h2>
-              <p className="text-muted-foreground">We hebben al uw antwoorden ontvangen. We houden u op de hoogte!</p>
-            </CardContent>
-          </Card>
+          <div className="w-full max-w-lg text-center">
+            <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+            <h2 className="text-3xl font-bold mb-2">Bedankt voor het invullen!</h2>
+            <p className="text-muted-foreground">We hebben al uw antwoorden ontvangen. We houden u op de hoogte!</p>
+          </div>
         )
         
       case 99: // Nee-pad
