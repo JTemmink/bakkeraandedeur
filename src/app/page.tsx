@@ -319,7 +319,7 @@ export default function Home() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-start sm:justify-center p-4 pt-28 sm:p-8 relative overflow-hidden">
+    <main className="flex min-h-screen flex-col items-center justify-start sm:justify-center p-4 pt-40 sm:p-8 relative overflow-hidden">
       <Image
         src="/bakkeraandedeurlogo.png"
         alt="Bakker aan de deur logo"
