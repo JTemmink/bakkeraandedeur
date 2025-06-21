@@ -69,17 +69,6 @@ const CroissantButton = ({ onClick, children, className = '' }: { onClick: () =>
   </button>
 );
 
-const ActionButton = ({ onClick, children, disabled }: { onClick: () => void, children: React.ReactNode, disabled?: boolean }) => (
-    <Button 
-        onClick={onClick} 
-        disabled={disabled} 
-        className="w-full !mt-8 bg-amber-700 hover:bg-amber-800 text-white text-xl" 
-        size="lg"
-    >
-        {children}
-    </Button>
-);
-
 export default function Home() {
   const [step, setStep] = useState(0) // 0: Landing, 1: Tijd, 2: Frequentie, 3: Brood, 4: Straat, 5: Huisnummer, 6: Succes
   const [formData, setFormData] = useState<FormData>({})
