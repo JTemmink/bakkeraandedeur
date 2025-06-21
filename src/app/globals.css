@@ -140,5 +140,22 @@
 }
 
 @layer utilities {
+  .housenumber-input {
+    background-color: transparent !important;
+    border: none !important;
+    border-bottom: 4px double #805b2d !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    outline: none !important;
+    text-align: center;
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+    width: 10rem;
+    margin: 0 auto;
+  }
+  .housenumber-input:focus {
+    --tw-ring-color: transparent !important;
+    border-bottom: 4px double #5c401d !important;
+  }
   /* ... existing code ... */
 }

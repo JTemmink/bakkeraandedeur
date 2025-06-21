@@ -22,10 +22,11 @@ type FormData = {
   telefoonnummer?: string
 }
 
-const StokbroodButton = ({ onClick, children }: { onClick: () => void; children: React.ReactNode }) => (
+const StokbroodButton = ({ onClick, children, disabled }: { onClick: () => void; children: React.ReactNode, disabled?: boolean }) => (
   <button
     onClick={onClick}
-    className="relative w-full h-16 border-2 border-amber-800/80 rounded-full bg-[#f2d5a3] hover:bg-[#eac88a] transition-all duration-200 flex items-center justify-center group shadow-lg"
+    disabled={disabled}
+    className="relative w-full h-16 border-2 border-amber-800/80 rounded-full bg-[#f2d5a3] hover:bg-[#eac88a] transition-all duration-200 flex items-center justify-center group shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
     style={{
       boxShadow: '0 4px 6px -1px rgba(101, 59, 12, 0.2), 0 2px 4px -1px rgba(101, 59, 12, 0.15), inset 0 -4px 5px rgba(101, 59, 12, 0.3)'
     }}
@@ -105,9 +106,13 @@ export default function Home() {
           <div className="text-center">
             <h1 className="text-4xl sm:text-5xl font-bold text-stone-800 mb-4" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.1)'}}>Interesse in brood aan de deur?</h1>
             <p className="text-xl text-stone-700 mb-8">Laat het ons weten!</p>
-            <div className="flex justify-center gap-8">
-              <CroissantButton onClick={() => setStep(1)}>Ja!</CroissantButton>
-              <CroissantButton onClick={() => window.location.href='https://www.google.com'}>Nee</CroissantButton>
+            <div className="flex justify-center gap-4 flex-col sm:flex-row items-center">
+              <button onClick={() => setStep(1)} className="transition-transform hover:scale-105">
+                <Image src="/croissant-ja.png" alt="Ja" width={200} height={200} />
+              </button>
+              <button onClick={() => window.location.href='https://www.google.com'} className="transition-transform hover:scale-105">
+                <Image src="/croissant-nee.png" alt="Nee" width={200} height={200} />
+              </button>
             </div>
           </div>
         )
@@ -192,9 +197,9 @@ export default function Home() {
                 </div>
               </div>
               
-              <ActionButton onClick={() => handleNextStep({ aantalHeleBroden, aantalHalveBroden, aantalOverige })}>
+              <StokbroodButton onClick={() => handleNextStep({ aantalHeleBroden, aantalHalveBroden, aantalOverige })}>
                 Volgende
-              </ActionButton>
+              </StokbroodButton>
             </div>
           </div>
         )
@@ -247,14 +252,15 @@ export default function Home() {
               </p>
             </div>
             <div className="space-y-6">
-              <div className="space-y-2">
+              <div className="space-y-2 flex flex-col items-center">
                 <Label htmlFor="huisnummer" className="text-lg">Huisnummer</Label>
                 <Input
                   id="huisnummer"
-                  placeholder="bv. 12a"
+                  placeholder=""
                   value={huisnummer}
                   onChange={(e) => setHuisnummer(e.target.value)}
-                  className="text-base"
+                  className="housenumber-input"
+                  autoFocus
                 />
               </div>
               <div className="space-y-2">
@@ -288,10 +294,9 @@ export default function Home() {
                   className="text-base"
                 />
               </div>
-              <ActionButton onClick={handleFinalSubmit} disabled={isSubmitting || !huisnummer || !email}>
-                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                Verzenden
-              </ActionButton>
+              <StokbroodButton onClick={handleFinalSubmit} disabled={isSubmitting || !huisnummer || !email}>
+                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Verzenden"}
+              </StokbroodButton>
             </div>
           </div>
         )
