@@ -23,28 +23,32 @@ type FormData = {
   telefoonnummer?: string
 }
 
-const StokbroodButton = ({ onClick, children, small = false }: { onClick: () => void; children: React.ReactNode; small?: boolean }) => (
-  <button
-    onClick={onClick}
-    className={`relative ${small ? 'w-full h-10' : 'w-full h-16'} border-2 border-amber-800/80 rounded-full bg-[#f2d5a3] hover:bg-[#eac88a] transition-all duration-200 flex items-center justify-center group shadow-lg`}
-    style={{
-      boxShadow: '0 4px 6px -1px rgba(101, 59, 12, 0.2), 0 2px 4px -1px rgba(101, 59, 12, 0.15), inset 0 -4px 5px rgba(101, 59, 12, 0.3)'
-    }}
-  >
-    {/* Diagonal lines to simulate baguette scores */}
-    <div className="absolute top-0 left-0 w-full h-full overflow-hidden rounded-full">
-      <div className={`absolute ${small ? 'w-1 h-8' : 'w-2 h-24'} bg-amber-900/20 transform -rotate-45 -translate-x-12 -translate-y-4`}></div>
-      <div className={`absolute ${small ? 'w-1 h-8' : 'w-2 h-24'} bg-amber-900/20 transform -rotate-45 -translate-x-4 -translate-y-4`}></div>
-      <div className={`absolute ${small ? 'w-1 h-8' : 'w-2 h-24'} bg-amber-900/20 transform -rotate-45 translate-x-4 -translate-y-4`}></div>
-      <div className={`absolute ${small ? 'w-1 h-8' : 'w-2 h-24'} bg-amber-900/20 transform -rotate-45 translate-x-12 -translate-y-4`}></div>
-      <div className={`absolute ${small ? 'w-1 h-8' : 'w-2 h-24'} bg-amber-900/20 transform -rotate-45 translate-x-20 -translate-y-4`}></div>
-      <div className={`absolute ${small ? 'w-1 h-8' : 'w-2 h-24'} bg-amber-900/20 transform -rotate-45 translate-x-28 -translate-y-4`}></div>
-    </div>
-    <span className={`relative z-10 font-bold ${small ? 'text-base' : 'text-xl'} text-stone-800 group-hover:text-stone-900 transition-colors`} style={{ textShadow: '1px 1px 1px rgba(255,255,255,0.5)' }}>
-      {children}
-    </span>
-  </button>
-);
+const StokbroodButton = ({ onClick, children, variant = 'large' }: { onClick: () => void; children: React.ReactNode; variant?: 'small' | 'large' }) => {
+  const isSmall = variant === 'small';
+  return (
+    <button
+      onClick={onClick}
+      className={`relative w-full ${isSmall ? 'h-10' : 'h-16'} border-2 border-amber-800/80 rounded-full bg-[#f2d5a3] hover:bg-[#eac88a] transition-all duration-200 flex items-center justify-center group shadow-lg`}
+      style={{
+        boxShadow: '0 4px 6px -1px rgba(101, 59, 12, 0.2), 0 2px 4px -1px rgba(101, 59, 12, 0.15), inset 0 -4px 5px rgba(101, 59, 12, 0.3)'
+      }}
+    >
+      {/* Diagonal lines to simulate baguette scores */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden rounded-full">
+        {[...Array(isSmall ? 3 : 6)].map((_, i) => (
+          <div
+            key={i}
+            className={`absolute ${isSmall ? 'w-1 h-8' : 'w-2 h-24'} bg-amber-900/20 transform -rotate-45`}
+            style={{ left: `${(100 / (isSmall ? 4 : 7)) * (i + 1)}%`, top: isSmall ? '-0.5rem' : '-1rem' }}
+          />
+        ))}
+      </div>
+      <span className={`relative z-10 font-bold ${isSmall ? 'text-base' : 'text-xl'} text-stone-800 group-hover:text-stone-900 transition-colors`} style={{ textShadow: '1px 1px 1px rgba(255,255,255,0.5)' }}>
+        {children}
+      </span>
+    </button>
+  );
+};
 
 export default function Home() {
   const [step, setStep] = useState(0) // 0: Landing, 1: Tijd, 2: Frequentie, 3: Brood, 4: Straat, 5: Huisnummer, 6: Succes
@@ -72,7 +76,7 @@ export default function Home() {
           <div className="text-center">
             <h1 className="text-4xl sm:text-5xl font-bold text-stone-800 mb-4" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.1)'}}>Interesse in brood aan de deur?</h1>
             <p className="text-xl text-stone-700 mb-8">Laat het ons weten!</p>
-            <div className="flex justify-center gap-4 xs:flex-row flex-col items-center">
+            <div className="flex justify-center gap-4 flex-row items-center">
               <button onClick={() => setStep(1)} className="transition-transform hover:scale-105">
                 <Image src="/croissant%20ja.png" alt="Ja" width={200} height={200} />
               </button>
@@ -94,7 +98,7 @@ export default function Home() {
             </CardHeader>
             <CardContent className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
               {bezorgTijden.map((tijd) => (
-                <StokbroodButton key={tijd} onClick={() => handleNextStep({ bezorgTijd: tijd })} small>
+                <StokbroodButton key={tijd} onClick={() => handleNextStep({ bezorgTijd: tijd })} variant="small">
                   <span className="text-base font-semibold">{tijd}</span>
                 </StokbroodButton>
               ))}
@@ -113,7 +117,7 @@ export default function Home() {
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
               {frequentieOpties.map(optie => (
-                <StokbroodButton key={optie} onClick={() => handleNextStep({ frequentie: optie })}>
+                <StokbroodButton key={optie} onClick={() => handleNextStep({ frequentie: optie })} variant="large">
                   {optie}
                 </StokbroodButton>
               ))}
@@ -172,10 +176,9 @@ export default function Home() {
                   </Button>
                 </div>
               </div>
-              
-              <Button onClick={() => handleNextStep({ aantalHeleBroden, aantalHalveBroden, aantalOverige })} className="w-full !mt-8" size="lg">
+              <StokbroodButton onClick={() => handleNextStep({ aantalHeleBroden, aantalHalveBroden, aantalOverige })} variant="large">
                 Volgende
-              </Button>
+              </StokbroodButton>
             </CardContent>
           </Card>
         )
