@@ -74,7 +74,7 @@ export default function Home() {
           <div className="text-center">
             <h1 className="text-4xl sm:text-5xl font-bold text-stone-800 mb-4" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.1)'}}>Interesse in brood aan de deur?</h1>
             <p className="text-xl text-stone-700 mb-8">Laat het ons weten!</p>
-            <div className="flex justify-center gap-4 flex-col sm:flex-row items-center">
+            <div className="flex justify-center gap-4 flex-row xs:flex-col items-center">
               <button onClick={() => setStep(1)} className="transition-transform hover:scale-105">
                 <Image src="/croissant%20ja.png" alt="Ja" width={200} height={200} />
               </button>
