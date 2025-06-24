@@ -25,10 +25,8 @@ type FormData = {
 
 const StokbroodButton = ({ onClick, children, variant = 'large', disabled = false }: { onClick: () => void; children: React.ReactNode; variant?: 'small' | 'large'; disabled?: boolean }) => {
   const isSmall = variant === 'small';
-  // Lijntjes alleen aan het begin van de knop, niet over de hele breedte
-  const baguetteLines = isSmall
-    ? [0, 20, 40] // percentages van de breedte
-    : [0, 10, 20, 30, 40, 50];
+  // Altijd 6 lijnen, diagonaal, gelijkmatig verdeeld
+  const baguetteLines = [8, 24, 40, 56, 72, 88]; // percentages van de breedte
   return (
     <button
       onClick={onClick}
