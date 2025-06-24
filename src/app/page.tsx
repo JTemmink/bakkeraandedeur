@@ -23,23 +23,28 @@ type FormData = {
   telefoonnummer?: string
 }
 
-const StokbroodButton = ({ onClick, children, variant = 'large' }: { onClick: () => void; children: React.ReactNode; variant?: 'small' | 'large' }) => {
+const StokbroodButton = ({ onClick, children, variant = 'large', disabled = false }: { onClick: () => void; children: React.ReactNode; variant?: 'small' | 'large'; disabled?: boolean }) => {
   const isSmall = variant === 'small';
+  // Lijntjes alleen aan het begin van de knop, niet over de hele breedte
+  const baguetteLines = isSmall
+    ? [0, 20, 40] // percentages van de breedte
+    : [0, 10, 20, 30, 40, 50];
   return (
     <button
       onClick={onClick}
-      className={`relative w-full ${isSmall ? 'h-10' : 'h-16'} border-2 border-amber-800/80 rounded-full bg-[#f2d5a3] hover:bg-[#eac88a] transition-all duration-200 flex items-center justify-center group shadow-lg`}
+      disabled={disabled}
+      className={`relative w-full ${isSmall ? 'h-10' : 'h-16'} border-2 border-amber-800/80 rounded-full bg-[#f2d5a3] hover:bg-[#eac88a] transition-all duration-200 flex items-center justify-center group shadow-lg disabled:opacity-60 disabled:cursor-not-allowed`}
       style={{
         boxShadow: '0 4px 6px -1px rgba(101, 59, 12, 0.2), 0 2px 4px -1px rgba(101, 59, 12, 0.15), inset 0 -4px 5px rgba(101, 59, 12, 0.3)'
       }}
     >
       {/* Diagonal lines to simulate baguette scores */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden rounded-full">
-        {[...Array(isSmall ? 3 : 6)].map((_, i) => (
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden rounded-full pointer-events-none">
+        {baguetteLines.map((left, i) => (
           <div
             key={i}
             className={`absolute ${isSmall ? 'w-1 h-8' : 'w-2 h-24'} bg-amber-900/20 transform -rotate-45`}
-            style={{ left: `${(100 / (isSmall ? 4 : 7)) * (i + 1)}%`, top: isSmall ? '-0.5rem' : '-1rem' }}
+            style={{ left: `${left}%`, top: isSmall ? '-0.5rem' : '-1rem' }}
           />
         ))}
       </div>
@@ -274,10 +279,10 @@ export default function Home() {
                   className="text-base"
                 />
               </div>
-              <Button onClick={handleFinalSubmit} disabled={isSubmitting || !huisnummer || !email} className="w-full !mt-8" size="lg">
+              <StokbroodButton onClick={handleFinalSubmit} disabled={isSubmitting || !huisnummer || !email} variant="large">
                 {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Verzenden
-              </Button>
+              </StokbroodButton>
             </CardContent>
           </Card>
         )
