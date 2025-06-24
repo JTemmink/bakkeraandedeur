@@ -72,7 +72,7 @@ export default function Home() {
           <div className="text-center">
             <h1 className="text-4xl sm:text-5xl font-bold text-stone-800 mb-4" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.1)'}}>Interesse in brood aan de deur?</h1>
             <p className="text-xl text-stone-700 mb-8">Laat het ons weten!</p>
-            <div className="flex justify-center gap-4 flex-col xs:flex-row items-center">
+            <div className="flex justify-center gap-4 xs:flex-row flex-col items-center">
               <button onClick={() => setStep(1)} className="transition-transform hover:scale-105">
                 <Image src="/croissant%20ja.png" alt="Ja" width={200} height={200} />
               </button>
@@ -85,7 +85,7 @@ export default function Home() {
       
       case 1: // Bedankt & Tijd
         return (
-          <Card className="w-full max-w-lg bg-white/90 shadow-lg">
+          <Card className="w-full max-w-lg" style={{ backgroundColor: '#f4ead6' }}>
             <CardHeader>
               <CardTitle>Leuk! Wanneer komt het u uit?</CardTitle>
               <CardDescription>
@@ -104,7 +104,7 @@ export default function Home() {
 
       case 2: // Frequentie
         return (
-          <Card className="w-full max-w-lg bg-white/90 shadow-lg">
+          <Card className="w-full max-w-lg" style={{ backgroundColor: '#f4ead6' }}>
             <CardHeader>
               <CardTitle>Hoe vaak zou u willen bestellen?</CardTitle>
               <CardDescription>
@@ -113,9 +113,9 @@ export default function Home() {
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
               {frequentieOpties.map(optie => (
-                <Button key={optie} onClick={() => handleNextStep({ frequentie: optie })} size="lg">
+                <StokbroodButton key={optie} onClick={() => handleNextStep({ frequentie: optie })}>
                   {optie}
-                </Button>
+                </StokbroodButton>
               ))}
             </CardContent>
           </Card>
@@ -123,7 +123,7 @@ export default function Home() {
         
       case 3: // Broodkeuze
         return (
-          <Card className="w-full max-w-lg bg-white/90 shadow-lg">
+          <Card className="w-full max-w-lg" style={{ backgroundColor: '#f4ead6' }}>
             <CardHeader>
               <CardTitle>Waar heeft u interesse in?</CardTitle>
               <CardDescription>
@@ -182,7 +182,7 @@ export default function Home() {
 
       case 4: // Straatkeuze
         return (
-          <Card className="w-full max-w-lg bg-white/90 shadow-lg">
+          <Card className="w-full max-w-lg" style={{ backgroundColor: '#f4ead6' }}>
             <CardHeader>
               <CardTitle>In welke straat woont u?</CardTitle>
               <CardDescription>
@@ -222,7 +222,7 @@ export default function Home() {
         }
 
         return (
-          <Card className="w-full max-w-lg bg-white/90 shadow-lg">
+          <Card className="w-full max-w-lg" style={{ backgroundColor: '#f4ead6' }}>
             <CardHeader>
               <CardTitle>Wat is uw huisnummer?</CardTitle>
               <CardDescription>
@@ -281,7 +281,7 @@ export default function Home() {
 
       case 6: // Succes
         return (
-          <Card className="w-full max-w-lg bg-white/90 shadow-lg text-center">
+          <Card className="w-full max-w-lg text-center" style={{ backgroundColor: '#f4ead6' }}>
             <CardContent className="p-8">
               <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
               <h2 className="text-2xl font-bold mb-2">Bedankt voor het invullen!</h2>
@@ -292,7 +292,7 @@ export default function Home() {
         
       case 99: // Nee-pad
          return (
-          <Card className="w-full max-w-lg bg-white/90 shadow-lg text-center">
+          <Card className="w-full max-w-lg text-center" style={{ backgroundColor: '#f4ead6' }}>
              <CardContent className="p-8">
               <h2 className="text-2xl font-bold mb-2">Jammer!</h2>
               <p className="text-muted-foreground">Toch bedankt voor uw tijd. Mocht u zich bedenken, dan weet u ons te vinden!</p>
