@@ -159,9 +159,3 @@
   }
   /* ... existing code ... */
 }
-
-@media (max-width: 400px) {
-  .xs\\:flex-col {
-    flex-direction: column !important;
-  }
-}

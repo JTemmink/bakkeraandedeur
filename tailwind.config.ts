@@ -18,6 +18,9 @@ const config = {
       },
     },
     extend: {
+      screens: {
+        'xs': '480px',
+      },
       colors: {
         bakker: {
           cream: '#FFF8E7',
