@@ -24,25 +24,24 @@ type FormData = {
   telefoonnummer?: string
 }
 
-const StokbroodButton = ({ onClick, children }: { onClick: () => void; children: React.ReactNode }) => (
+const StokbroodButton = ({ onClick, children, small = false }: { onClick: () => void; children: React.ReactNode; small?: boolean }) => (
   <button
     onClick={onClick}
-    className="relative w-full h-16 border-2 border-amber-800/80 rounded-full bg-[#f2d5a3] hover:bg-[#eac88a] transition-all duration-200 flex items-center justify-center group shadow-lg"
+    className={`relative ${small ? 'w-full h-10' : 'w-full h-16'} border-2 border-amber-800/80 rounded-full bg-[#f2d5a3] hover:bg-[#eac88a] transition-all duration-200 flex items-center justify-center group shadow-lg`}
     style={{
       boxShadow: '0 4px 6px -1px rgba(101, 59, 12, 0.2), 0 2px 4px -1px rgba(101, 59, 12, 0.15), inset 0 -4px 5px rgba(101, 59, 12, 0.3)'
     }}
   >
     {/* Diagonal lines to simulate baguette scores */}
     <div className="absolute top-0 left-0 w-full h-full overflow-hidden rounded-full">
-        <div className="absolute w-2 h-24 bg-amber-900/20 transform -rotate-45 -translate-x-12 -translate-y-4"></div>
-        <div className="absolute w-2 h-24 bg-amber-900/20 transform -rotate-45 -translate-x-4 -translate-y-4"></div>
-        <div className="absolute w-2 h-24 bg-amber-900/20 transform -rotate-45 translate-x-4 -translate-y-4"></div>
-        <div className="absolute w-2 h-24 bg-amber-900/20 transform -rotate-45 translate-x-12 -translate-y-4"></div>
-        <div className="absolute w-2 h-24 bg-amber-900/20 transform -rotate-45 translate-x-20 -translate-y-4"></div>
-        <div className="absolute w-2 h-24 bg-amber-900/20 transform -rotate-45 translate-x-28 -translate-y-4"></div>
+      <div className={`absolute ${small ? 'w-1 h-8' : 'w-2 h-24'} bg-amber-900/20 transform -rotate-45 -translate-x-12 -translate-y-4`}></div>
+      <div className={`absolute ${small ? 'w-1 h-8' : 'w-2 h-24'} bg-amber-900/20 transform -rotate-45 -translate-x-4 -translate-y-4`}></div>
+      <div className={`absolute ${small ? 'w-1 h-8' : 'w-2 h-24'} bg-amber-900/20 transform -rotate-45 translate-x-4 -translate-y-4`}></div>
+      <div className={`absolute ${small ? 'w-1 h-8' : 'w-2 h-24'} bg-amber-900/20 transform -rotate-45 translate-x-12 -translate-y-4`}></div>
+      <div className={`absolute ${small ? 'w-1 h-8' : 'w-2 h-24'} bg-amber-900/20 transform -rotate-45 translate-x-20 -translate-y-4`}></div>
+      <div className={`absolute ${small ? 'w-1 h-8' : 'w-2 h-24'} bg-amber-900/20 transform -rotate-45 translate-x-28 -translate-y-4`}></div>
     </div>
-
-    <span className="relative z-10 font-bold text-xl text-stone-800 group-hover:text-stone-900 transition-colors" style={{ textShadow: '1px 1px 1px rgba(255,255,255,0.5)' }}>
+    <span className={`relative z-10 font-bold ${small ? 'text-base' : 'text-xl'} text-stone-800 group-hover:text-stone-900 transition-colors`} style={{ textShadow: '1px 1px 1px rgba(255,255,255,0.5)' }}>
       {children}
     </span>
   </button>
@@ -74,7 +73,7 @@ export default function Home() {
           <div className="text-center">
             <h1 className="text-4xl sm:text-5xl font-bold text-stone-800 mb-4" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.1)'}}>Interesse in brood aan de deur?</h1>
             <p className="text-xl text-stone-700 mb-8">Laat het ons weten!</p>
-            <div className="flex justify-center gap-4 flex-row xs:flex-col items-center">
+            <div className="flex justify-center gap-4 flex-col xs:flex-row items-center">
               <button onClick={() => setStep(1)} className="transition-transform hover:scale-105">
                 <Image src="/croissant%20ja.png" alt="Ja" width={200} height={200} />
               </button>
@@ -94,15 +93,12 @@ export default function Home() {
                 Geef aan hoe laat we het brood uiterlijk moeten bezorgen voor een vers ontbijt.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <Select onValueChange={(value) => handleNextStep({ bezorgTijd: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Kies een uiterlijke bezorgtijd" />
-                </SelectTrigger>
-                <SelectContent>
-                  {bezorgTijden.map((tijd) => <SelectItem key={tijd} value={tijd}>{tijd}</SelectItem>)}
-                </SelectContent>
-              </Select>
+            <CardContent className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
+              {bezorgTijden.map((tijd) => (
+                <StokbroodButton key={tijd} onClick={() => handleNextStep({ bezorgTijd: tijd })} small>
+                  <span className="text-base font-semibold">{tijd}</span>
+                </StokbroodButton>
+              ))}
             </CardContent>
           </Card>
         )
