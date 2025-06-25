@@ -54,7 +54,7 @@ const StokbroodButton = ({ onClick, children, variant = 'large', disabled = fals
 };
 
 export default function Home() {
-  const [step, setStep] = useState(0) // 0: Landing, 1: Tijd, 2: Frequentie, 3: Brood, 4: Straat, 5: Huisnummer, 6: Succes
+  const [step, setStep] = useState(0) // 0: Landing, 1: Tijd, 2: Frequentie, 3: Brood, 4: Straat, 5: Huisnummer, 6: Contactgegevens, 7: Succes
   const [formData, setFormData] = useState<FormData>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -206,6 +206,38 @@ export default function Home() {
         );
 
       case 5: // Huisnummer
+        const handleHuisnummerSubmit = () => {
+          if (huisnummer) {
+            handleNextStep({ huisnummer });
+          }
+        };
+        return (
+          <Card className="w-full max-w-lg" style={{ backgroundColor: '#f4ead6' }}>
+            <CardHeader>
+              <CardTitle>Wat is uw huisnummer?</CardTitle>
+              <CardDescription>
+                Vul hieronder uw huisnummer en eventuele toevoeging in.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="huisnummer" className="text-lg">Huisnummer</Label>
+                <Input
+                  id="huisnummer"
+                  placeholder="bv. 12a"
+                  value={huisnummer}
+                  onChange={(e) => setHuisnummer(e.target.value)}
+                  className="text-base"
+                />
+              </div>
+              <StokbroodButton onClick={handleHuisnummerSubmit} disabled={!huisnummer} variant="large">
+                Volgende
+              </StokbroodButton>
+            </CardContent>
+          </Card>
+        )
+
+      case 6: // Contactgegevens
         const handleFinalSubmit = async () => {
           setIsSubmitting(true)
           const finalData = { ...formData, huisnummer, email, telefoonnummer, opmerkingen }
@@ -226,26 +258,15 @@ export default function Home() {
             setStep(prev => prev + 1)
           }
         }
-
         return (
           <Card className="w-full max-w-lg" style={{ backgroundColor: '#f4ead6' }}>
             <CardHeader>
-              <CardTitle>Wat is uw huisnummer?</CardTitle>
+              <CardTitle>Contactgegevens</CardTitle>
               <CardDescription>
-                Vul hieronder uw huisnummer en eventuele toevoeging in.
+                Vul hieronder je e-mailadres, telefoonnummer en eventuele opmerkingen in.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="huisnummer" className="text-lg">Huisnummer</Label>
-                <Input
-                  id="huisnummer"
-                  placeholder="bv. 12a"
-                  value={huisnummer}
-                  onChange={(e) => setHuisnummer(e.target.value)}
-                  className="text-base"
-                />
-              </div>
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-lg">E-mailadres</Label>
                 <Input
@@ -277,7 +298,7 @@ export default function Home() {
                   className="text-base"
                 />
               </div>
-              <StokbroodButton onClick={handleFinalSubmit} disabled={isSubmitting || !huisnummer || !email} variant="large">
+              <StokbroodButton onClick={handleFinalSubmit} disabled={isSubmitting || !email} variant="large">
                 {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Verzenden
               </StokbroodButton>
@@ -285,7 +306,7 @@ export default function Home() {
           </Card>
         )
 
-      case 6: // Succes
+      case 7: // Succes
         return (
           <Card className="w-full max-w-lg text-center" style={{ backgroundColor: '#f4ead6' }}>
             <CardContent className="p-8">
@@ -312,7 +333,7 @@ export default function Home() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-start sm:justify-center p-4 pt-28 sm:p-8 relative overflow-hidden">
+    <main className="flex min-h-screen flex-col items-center justify-start sm:justify-center p-4 sm:p-8 relative overflow-hidden" style={{paddingTop: 0}}>
       {/* Background image */}
       <Image
         src="/bakkeraandedeurlogo.png"
