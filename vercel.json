@@ -2,5 +2,6 @@
   "buildCommand": "cd bakker-aan-de-deur && npm run build",
   "outputDirectory": "bakker-aan-de-deur/.next",
   "installCommand": "cd bakker-aan-de-deur && npm install",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "rootDirectory": "bakker-aan-de-deur"
 } 
