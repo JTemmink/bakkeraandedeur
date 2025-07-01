@@ -2,6 +2,7 @@
   "dependencies": {
     "@types/react": "^19.1.8",
     "next": "^15.3.4",
+    "nodemailer": "^7.0.4",
     "react": "^19.1.0",
     "tailwindcss-animate": "^1.0.7"
   }
