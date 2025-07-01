@@ -1,6 +1,4 @@
 {
   "buildCommand": "cd bakker-aan-de-deur && npm run build",
-  "outputDirectory": ".next",
-  "installCommand": "cd bakker-aan-de-deur && npm install",
-  "framework": "nextjs"
+  "installCommand": "cd bakker-aan-de-deur && npm install"
 } 
