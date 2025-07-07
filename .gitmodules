@@ -1,0 +1,3 @@
+[submodule "bakker-aan-de-deur"]
+	path = bakker-aan-de-deur
+	url = https://github.com/JTemmink/bakkeraandedeur.git 
