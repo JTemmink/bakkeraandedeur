@@ -1,4 +1,5 @@
 {
-  "buildCommand": "cd bakker-aan-de-deur && npm run build",
-  "installCommand": "cd bakker-aan-de-deur && npm install"
+  "buildCommand": "git submodule update --init --recursive && cd bakker-aan-de-deur && npm run build",
+  "installCommand": "git submodule update --init --recursive && cd bakker-aan-de-deur && npm install",
+  "outputDirectory": "bakker-aan-de-deur/.next"
 } 
