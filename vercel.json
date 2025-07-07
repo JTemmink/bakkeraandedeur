@@ -1,5 +1,4 @@
 {
   "buildCommand": "cd bakker-aan-de-deur && npm run build",
-  "installCommand": "cd bakker-aan-de-deur && npm install",
-  "outputDirectory": "bakker-aan-de-deur/.next"
+  "installCommand": "cd bakker-aan-de-deur && npm install"
 } 
