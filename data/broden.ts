@@ -12,9 +12,15 @@ export const broodOpties = [
 ]
 
 export const bezorgTijden = [
-  '06:00 - 07:00',
-  '07:00 - 08:00',
-  '08:00 - 09:00',
-  '09:00 - 10:00',
-  '10:00 - 11:00'
+  '06:30 - 07:00',
+  '07:00 - 07:30',
+  '07:30 - 08:00',
+  '08:00 - 08:30',
+  '08:30 - 09:00',
+  '09:00 - 09:30'
+]
+
+export const frequentieOpties = [
+  '1 keer per week',
+  '2 keer per week'
 ] 
